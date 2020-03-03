@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} [%-10t] %-5level %logger{5} - %msg%n"/>
+            <LevelRangeFilter minLevel="ERROR" maxLevel="DEBUG"/>
+        </Console>
+        <File name="ErrorLog" fileName="D:\IdeaProjects\FinalProject\logs\error.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} [%-10t] %-5level %logger{5} - %msg%n %throwable"/>
+            <LevelRangeFilter minLevel="FATAL" maxLevel="DEBUG"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ErrorLog"/>
+        </Root>
+    </Loggers>
+</Configuration>
