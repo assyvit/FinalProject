@@ -1,0 +1,54 @@
+package com.vitkovskaya.finalProject.dao;
+
+import com.vitkovskaya.finalProject.entity.Cleaning;
+import com.vitkovskaya.finalProject.entity.CleaningType;
+import com.vitkovskaya.finalProject.entity.CleaningItem;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+public interface CleaningDao {
+
+    List<Cleaning> findByName(String patternName) throws DaoException;
+
+    List<Cleaning> findByMinPrice() throws DaoException;
+
+    List<Cleaning> findByMaxPrice() throws DaoException;
+
+    List<Cleaning> findByPriceFromTo(int priceFrom, int priceTo) throws DaoException;
+
+    List<Cleaning> findByServiceType(CleaningType cleaningType) throws DaoException;
+    Optional<BigDecimal> findPriceById(long cleaningId) throws DaoException; // FIXME: 25.02.2020
+    /**
+     * Gets a row from the table using cleaner id,
+     * builds cleaning, adds it to List and returns List<Cleaning> object that represents this id
+     *
+     * @param cleanerId a cleaner id
+     * @return a {@code List} of {@code Cleaning}, or empty List if no cleaning is founded by id in the table
+     * @throws DaoException if a database access error occurs
+     */
+    List<Cleaning> findByCleanerId(long cleanerId) throws DaoException;
+
+    /**
+     * Updates a row in the table using cleaning id
+     * with new values - availableStatus
+     *
+     * @param cleaningId      - a cleaning id
+     * @param availableStatus - a new status value (is cleaning available for ordering - true, otherwise - false)
+     * @return {@code true} if row was updated, otherwise {@code false}
+     * @throws DaoException if occurs database access error
+     */
+    boolean updateCleaningStatus(long cleaningId, boolean availableStatus) throws DaoException;
+
+    /**
+     * Returns a List that has a {@code ItemInCart}.
+     * List is built from the rows in two tables 'cleaning', 'cleaning_in_order'.
+     * List contains ItemInCart only for one order.
+     *
+     * @param orderId order id
+     * @return a List contains {@code ItemInCart} presented in the order and their quantity, not null
+     * @throws DaoException if a database access error occurs
+     */
+     List<CleaningItem> findCleaningsInOrder(Long orderId) throws DaoException;
+}
