@@ -1,7 +1,5 @@
 package com.vitkovskaya.finalProject.validator;
 
-import com.vitkovskaya.finalProject.entity.User;
-import com.vitkovskaya.finalProject.entity.UserRole;
 import com.vitkovskaya.finalProject.service.ServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,11 +7,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-
 import static org.testng.Assert.*;
 
 public class DataValidatorTest {
@@ -31,40 +26,6 @@ public class DataValidatorTest {
         logger.info("End test in cleanerServiceTest");
         validator = null;
     }
-
-    @DataProvider(name = "loginProvider")
-    private static Object[] loginProvider() {
-        return new Object[]{
-                "test@gmail.com",
-                "test@mail.ru",
-                "test1@mail.ru",
-                "test_1@tut.by"
-        };
-    }
-
-    @Test(dataProvider = "loginProvider")
-    public void testValidateLoginPositive(String login) {
-        assertTrue(validator.validateLogin(login));
-    }
-
-    @DataProvider(name = "loginIncorrectProvider")
-    private static Object[] loginIncorrectProvider() {
-        return new Object[]{
-                "testgmail.com",
-                "test@mailru",
-                "test1mailru",
-                "Loginloginloginloginloginloginlogin45@gmail.com",
-                "loginlogin@gmail,com",
-                "",
-                null
-        };
-    }
-
-    @Test(dataProvider = "loginIncorrectProvider")
-    public void testValidateLoginNegative(String login) {
-        assertFalse(validator.validateLogin(login));
-    }
-
     @DataProvider(name = "passwordProvider")
     private static Object[] passwordProvider() {
         return new Object[]{
@@ -72,11 +33,6 @@ public class DataValidatorTest {
                 "qqQQ11-ppp",
                 "Qaz123456_",
         };
-    }
-
-    @Test(dataProvider = "passwordProvider")
-    public void testValidatePassword(String password) {
-        assertTrue(validator.validatePassword(password));
     }
 
     @DataProvider(name = "passwordIncorrectProvider")
@@ -93,17 +49,6 @@ public class DataValidatorTest {
         };
     }
 
-    @Test(dataProvider = "passwordIncorrectProvider")
-    public void testValidatePasswordNegative(String password) {
-        assertFalse(validator.validatePassword(password));
-    }
-
-    @Test
-    public void testDoublePasswordCheck() {
-        String password = "2016-Om-7";
-        String confirm = "2016-Om-7";
-        assertTrue(validator.doublePasswordCheck(password, confirm));
-    }
 
     @DataProvider(name = "stringProvider")
     private static Object[] stringProvider() {
@@ -116,11 +61,6 @@ public class DataValidatorTest {
                 "123456789",
                 "12345QWq"
         };
-    }
-
-    @Test(dataProvider = "stringProvider")
-    public void testIsValidStringPositive(String example) {
-        assertTrue(validator.isValidString(example));
     }
 
     @DataProvider(name = "stringIncorrectProvider")
@@ -138,21 +78,6 @@ public class DataValidatorTest {
                         "JDK modules.",
                 null
         };
-    }
-
-    @Test(dataProvider = "stringIncorrectProvider")
-    public void testIsValidStringNegative(String example) {
-        assertFalse(validator.isValidString(example));
-    }
-
-    @Test(dataProvider = "stringProvider")
-    public void testIsValidTextPositive(String example) {
-        assertTrue(validator.isValidText(example));
-    }
-
-    @Test(dataProvider = "stringIncorrectProvider")
-    public void testIsValidTextNegative(String example) {
-        assertFalse(validator.isValidText(example));
     }
 
     @DataProvider(name = "CleaningCorrect")

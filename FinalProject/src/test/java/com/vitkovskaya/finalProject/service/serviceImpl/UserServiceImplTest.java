@@ -71,10 +71,7 @@ public class UserServiceImplTest {
         assertTrue(actual);
     }
 
-    @Test // FIXME: 02.03.2020 
-    public void testRegisterUser() throws ServiceException {
-    }
-    @DataProvider(name = "CleanerRegister")
+      @DataProvider(name = "CleanerRegister")
     private static Object[] []cleanerProvider() {
         StringBuilder builder = new StringBuilder();
         Random random = new Random();

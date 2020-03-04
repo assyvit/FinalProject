@@ -102,7 +102,4 @@ public class CleaningServiceImplTest {
         assertTrue(actual);
     }
 
-    @Test // FIXME: 02.03.2020
-    public void testGetCleaningPrice() throws ServiceException {
-    }
 }
