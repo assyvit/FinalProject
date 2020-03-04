@@ -9,10 +9,11 @@ import org.apache.logging.log4j.Logger;
 
 public class SendEmailCommand implements Command {
     private final static Logger logger = LogManager.getLogger();
+
     @Override
-    public Router execute(RequestContent content)  {
+    public Router execute(RequestContent content) {
         Router router = new Router();
-        String page = ConfigurationManager.getProperty(ConstantName.JSP_LOGIN); // FIXME: 10.02.2020
+        String page = ConfigurationManager.getProperty(ConstantName.JSP_LOGIN);
         SendEmail sendEmail = new SendEmail();
         String mailTo = content.getRequestParameter(ConstantName.PARAMETER_MAIL);
         String subject = content.getRequestParameter(ConstantName.PARAMETER_MAIL_SUBJECT);
@@ -20,9 +21,9 @@ public class SendEmailCommand implements Command {
         try {
             sendEmail.send(mailTo, subject, message);
             router.setPagePath(page);
-            router.setType(RouteType.FORWARD);
         } catch (ServiceException e) {
-            e.printStackTrace();
+            logger.error("Error while changing user status", e);
+            router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
         }
         return router;
     }

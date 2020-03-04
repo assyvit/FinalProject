@@ -10,11 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-/**
- * The {@code ShowOrdersCommand} class
- * is a command to show orders page.
- *
- */
+
 public class ShowOrdersCommand implements Command {
     private final static Logger logger = LogManager.getLogger();
     /**
@@ -36,21 +32,17 @@ public class ShowOrdersCommand implements Command {
         try {
             orderList = orderService.findAllOrders();
             if (!orderList.isEmpty()) {
-                content.addRequestAttribute(ConstantName.ATTRIBUTE_ORDERS_LIST, orderList);
+                content.addSessionAttribute(ConstantName.ATTRIBUTE_ORDERS_LIST, orderList);
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_SHOW_ORDERS));
-                router.setType(RouteType.FORWARD);
             } else {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_SHOW_ORDERS_ERROR,
                         MessageManager.getProperty(ConstantName.MESSAGE_SHOW_ORDER_ERROR ));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ADMIN_CABINET));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
-            logger.error("Error while executing command", e);
+            logger.error("Error while getting all orders", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
-            router.setType(RouteType.FORWARD);
         }
         return router;
-
     }
 }
