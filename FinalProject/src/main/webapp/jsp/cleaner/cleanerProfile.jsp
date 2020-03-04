@@ -15,14 +15,10 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <title><fmt:message key="profile.title"/></title>
 </head>
 <body leftmargin="50">
@@ -88,19 +84,15 @@
             <input id="formSubmit" class="btn btn-dark" type="submit" name="Submit" value=" <fmt:message key="save"/>"/>
             <br/>
         </form>
-        <br>
         <div>
             <a class="btn btn-dark" href="${pageContext.request.contextPath}/controller?command=go_to_change_password">
-                <fmt:message key="changePassword.title"/>
+                <fmt:message key="changePassword.title"/> </a>
+        </div>
         </div>
         <strong><p class="text-danger"> ${editProfileError} </p></strong>
-
-
         <div>
-            <a href="${pageContext.request.contextPath}/controller?command=go_to_cabinet" class="btn btn-dark"> <fmt:message
-                    key="back.toCabinet"/></a>
+            <a href="${pageContext.request.contextPath}/controller?command=go_to_cabinet" class="btn btn-dark"> <fmt:message key="back.toCabinet"/></a>
         </div>
-
     </div>
     <div class="col">
         <div>

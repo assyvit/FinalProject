@@ -43,7 +43,7 @@
 
 </nav>
 <div class="container">
-    <h5><fmt:message key="order.confirm"/></h5>
+    <h3><fmt:message key="order.confirm"/></h3>
     <br>
     <form method="POST" action="${pageContext.request.contextPath}/controller">
         <input type="hidden" name="command" value="confirm_order"/>
@@ -123,8 +123,9 @@
 
     <div>
         <div>
-            <a href="${pageContext.request.contextPath}/controller?command=go_to_cabinet" class="btn btn-dark"> <fmt:message
-                    key="back.toCabinet"/></a>
+            <a href="${pageContext.request.contextPath}/controller?command=go_to_cabinet" class="btn btn-dark">
+                <fmt:message
+                        key="back.toCabinet"/></a>
         </div>
 
     </div>
@@ -133,7 +134,9 @@
     <strong><p class="text-danger"> ${map.textError} </p></strong>
     <strong><p class="text-danger"> ${orderError} </p></strong>
 
-
+    <br>
+    <br>
+    <br>
     <script>
 
         $(function () {
@@ -151,7 +154,7 @@
     </script>
     <br>
     <br>
-
+    <br>
 
 </div>
 <footer class="navbar navbar-inverse navbar-fixed-bottom">

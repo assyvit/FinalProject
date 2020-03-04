@@ -3,7 +3,6 @@ package com.vitkovskaya.finalProject.pool;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -14,6 +13,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * The {@code ConnectionPool} class has private BlockingQueue in which
  * ProxyConnections are stored.
@@ -39,7 +39,7 @@ public class ConnectionPool {
     private BlockingQueue<ProxyConnection> availableConnections;
     private Queue<ProxyConnection> takenConnections;
     private Properties properties;
-    private PropertyLoader propertyLoader = new PropertyLoader(); // FIXME: 28.01.2020
+    private  static PropertyLoader propertyLoader = new PropertyLoader();
     private String URL;
 
     private ConnectionPool() {
@@ -59,7 +59,7 @@ public class ConnectionPool {
                 Connection connection = DriverManager.getConnection(URL, properties);
                 availableConnections.offer(new ProxyConnection(connection));
             } catch (SQLException e) {
-                logger.log(Level.ERROR, "SQLException", e); // FIXME: 21.01.2020 
+                logger.log(Level.ERROR, "Error while creating connections", e);
             }
         }
         if (availableConnections.size() == 0) {
@@ -68,7 +68,10 @@ public class ConnectionPool {
         }
         checkNumberConnections();
     }
-
+    /**
+     * Checks number of created connections, if number is less than default pool size create new,
+     * while number of created connections is default pool size
+     */
     private void checkNumberConnections() {
         int count = 0;
         if (getPoolSize() != DEFAULT_POOL_SIZE) {
@@ -78,7 +81,7 @@ public class ConnectionPool {
                     Connection connection = DriverManager.getConnection(URL, properties);
                     availableConnections.offer(new ProxyConnection(connection));
                 } catch (SQLException e) {
-                    logger.log(Level.ERROR, "SQLException", e); // FIXME: 21.01.2020 
+                    logger.log(Level.ERROR, "Error while creating connections", e);
                 }
             }
             logger.log(Level.ERROR, count + "Connections have been lost and created again");
@@ -103,40 +106,41 @@ public class ConnectionPool {
         }
         return instance;
     }
-
+    /**
+     * Returns the Connection object.
+     *
+     * @return the {@code Connection} object.
+     */
     public Connection getConnection() {
         ProxyConnection connection = null;
         try {
             connection = availableConnections.take();
             takenConnections.offer(connection);
-         } catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.log(Level.ERROR, "Connection is lost");
             Thread.currentThread().interrupt();
         }
         return connection;
     }
-
+    /**
+     * Returns the Connection object to the {@code ConnectionPool} object .
+     */
     public void releaseConnection(Connection connection) {
-        // check instanceof or getClass ProxyConnection
-        // преобразовать соединение
         if (connection.getClass() == ProxyConnection.class) {
             takenConnections.remove(connection);
             availableConnections.offer((ProxyConnection) connection);
         }
     }
-
-    public int getPoolSize() {
+    private int getPoolSize() {
         return availableConnections.size() + takenConnections.size();
     }
-
+    /**
+     * Destroy the {@code ConnectionPool} object.
+     */
     public void closePool() {
-        // обычный цикл for
-        // метод take (если нет объеков, то ждет, когда они вернуться
-        // метод RealClose
         for (int i = 0; i < DEFAULT_POOL_SIZE; i++) {
             try {
                 availableConnections.take().realClose();
-                //        logger.log(Level.DEBUG, "Closing pool");
             } catch (SQLException | InterruptedException e) {
                 logger.log(Level.ERROR, "ConnectionPool close error", e);
             }
@@ -155,7 +159,6 @@ public class ConnectionPool {
                 logger.log(Level.ERROR, " DriverManager close error", e);
             }
         });
-
     }
 }
 

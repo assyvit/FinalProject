@@ -6,7 +6,7 @@ import com.vitkovskaya.finalProject.entity.User;
 import com.vitkovskaya.finalProject.service.ServiceException;
 import com.vitkovskaya.finalProject.service.serviceImpl.UserServiceImpl;
 import com.vitkovskaya.finalProject.util.ConfigurationManager;
-import org.apache.logging.log4j.Level;
+import com.vitkovskaya.finalProject.util.MessageManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,22 +18,18 @@ public class RecoverPasswordCommand implements Command {
     @Override
     public Router execute(RequestContent content) {
         Router router = new Router();
+        SendEmail sendEmail = new SendEmail();
         UserServiceImpl userService = new UserServiceImpl();
         String login = content.getRequestParameter(ConstantName.PARAMETER_LOGIN).trim();
-              try {
+        try {
             if (userService.checkUserLogin(login)) {
-                SendEmail sendEmail = new SendEmail();
-                if (sendEmail.send(login, ConstantName.SUBJECT_PASSWORD_RECOVER, ConstantName.EMAIL_PASSWORD_RECOVER)) {
-                    Optional<User> userOptional = userService.findByLogin(login);
-                    if (userOptional.isPresent()) {
-                        if (userService.changePassword(userOptional.get(), ConstantName.EMAIL_TEMPORARY_PASSWORD)) {
-                            content.addRequestAttribute(ConstantName.ATTRIBUTE_PASSWORD_RECOVER_SUCCESS,
-                                    ConstantName.MESSAGE_PASSWORD_RECOVER_SUCCESS);
-                            router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_LOGIN));
-                            router.setType(RouteType.FORWARD);
-                        } else {
-                            setErrorMessage(content, router);
-                        }
+                Optional<User> userOptional = userService.findByLogin(login);
+                if (userOptional.isPresent()) {
+                    if (userService.changePassword(userOptional.get(), ConstantName.EMAIL_TEMPORARY_PASSWORD)) {
+                        sendEmail.send(login, ConstantName.SUBJECT_PASSWORD_RECOVER, ConstantName.EMAIL_PASSWORD_RECOVER);
+                        content.addRequestAttribute(ConstantName.ATTRIBUTE_PASSWORD_RECOVER_SUCCESS,
+                                MessageManager.getProperty(ConstantName.MESSAGE_PASSWORD_RECOVER_SUCCESS));
+                        router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_LOGIN));
                     } else {
                         setErrorMessage(content, router);
                     }
@@ -42,24 +38,18 @@ public class RecoverPasswordCommand implements Command {
                 }
             } else {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_PASSWORD_RECOVER_NO_LOGIN,
-                        ConstantName.MESSAGE_PASSWORD_RECOVER_NO_LOGIN);
+                        MessageManager.getProperty(ConstantName.MESSAGE_PASSWORD_RECOVER_NO_LOGIN));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_PASSWORD_RECOVER));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
             logger.error("Error while recovering password", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
-            router.setType(RouteType.FORWARD);
         }
-
-
         return router;
     }
-
     private void setErrorMessage(RequestContent content, Router router) {
         content.addRequestAttribute(ConstantName.ATTRIBUTE_PASSWORD_RECOVER_ERROR,
-                ConstantName.MESSAGE_PASSWORD_RECOVER_ERROR);
+                MessageManager.getProperty(ConstantName.MESSAGE_PASSWORD_RECOVER_ERROR));
         router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_PASSWORD_RECOVER));
-        router.setType(RouteType.FORWARD);
     }
 }

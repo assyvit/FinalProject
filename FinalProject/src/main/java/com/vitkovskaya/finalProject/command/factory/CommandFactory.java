@@ -5,7 +5,6 @@ import com.vitkovskaya.finalProject.util.MessageManager;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.Optional;
 
 /**
@@ -15,7 +14,6 @@ import java.util.Optional;
  */
 public class CommandFactory {
     private final static Logger logger = LogManager.getLogger();
-
     public Optional<Command> defineCommand(RequestContent content) {
         Optional<Command> current;
         String action = content.getRequestParameter(ConstantName.PARAM_NAME_COMMAND);

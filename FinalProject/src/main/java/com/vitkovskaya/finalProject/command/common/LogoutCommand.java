@@ -3,11 +3,6 @@ package com.vitkovskaya.finalProject.command.common;
 import com.vitkovskaya.finalProject.command.*;
 import com.vitkovskaya.finalProject.util.ConfigurationManager;
 
-/**
- * The {@code LogoutCommand} class
- * is a command to log out user from the system.
- *
- */
 public class LogoutCommand implements Command {
     /**
      * Invalidates user session.
@@ -22,8 +17,7 @@ public class LogoutCommand implements Command {
     public Router execute(RequestContent content) {
         Router router = new Router();
         content.setInvalidateSession(true);
-        router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_MAIN));
-        router.setType(RouteType.REDIRECT);
+        router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_LOGIN));
         return router;
     }
 }

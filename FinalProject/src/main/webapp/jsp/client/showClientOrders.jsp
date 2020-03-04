@@ -8,14 +8,10 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <title><fmt:message key="ordersList.title"/></title>
 </head>
 <body>
@@ -50,6 +46,7 @@ ${showOrdersError}
                 <td><b><fmt:message key="order.paymentType"/></b></td>
                 <td><b><fmt:message key="order.paymentFulfilled"/></b></td>
                 <td><b><fmt:message key="order.comment"/></b></td>
+                <td><b><fmt:message key="title.cleanersInfo"/></b></td>
             </tr>
             </thead>
             <tbody>
@@ -70,6 +67,12 @@ ${showOrdersError}
                     <td>${order.paymentType}</td>
                     <td>${order.paymentFulfilled}</td>
                     <td>${order.comment}</td>
+                    <td>
+                            ${fn:escapeXml(order.cleaner.firstName)}
+                            ${fn:escapeXml(order.cleaner.lastName)}
+                            ${fn:escapeXml(order.cleaner.address)}
+                            ${fn:escapeXml(order.cleaner.telephoneNumber)}
+                    </td>
                     <td>
                         <c:choose>
 

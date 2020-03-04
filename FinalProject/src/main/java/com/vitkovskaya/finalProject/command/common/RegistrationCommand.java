@@ -1,26 +1,20 @@
 package com.vitkovskaya.finalProject.command.common;
 
 import com.vitkovskaya.finalProject.command.*;
+import com.vitkovskaya.finalProject.email.SendEmail;
 import com.vitkovskaya.finalProject.entity.CleaningItem;
-
 import com.vitkovskaya.finalProject.entity.User;
-import com.vitkovskaya.finalProject.entity.UserRole;
 import com.vitkovskaya.finalProject.service.ServiceException;
-import com.vitkovskaya.finalProject.service.serviceImpl.ClientServiceImpl;
 import com.vitkovskaya.finalProject.util.ConfigurationManager;
 import com.vitkovskaya.finalProject.util.MessageManager;
 import com.vitkovskaya.finalProject.service.serviceImpl.UserServiceImpl;
 import com.vitkovskaya.finalProject.validator.DataValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.math.BigDecimal;
 import java.util.*;
 
-/**
- * The {@code RegisterCommand} class
- * is a command to register new client.
- */
+
 public class RegistrationCommand implements Command {
     private final static Logger logger = LogManager.getLogger();
 
@@ -42,11 +36,10 @@ public class RegistrationCommand implements Command {
      * @see DataValidator#validateUserInputDate(Map)
      * @see DataValidator#validateLoginPassword(String, String, String)
      * @see UserServiceImpl#checkUserLogin(String)
-     * @see UserServiceImpl#registerUser(String, String, UserRole)
-     * @see ClientServiceImpl#registerClient(Long, Map)
      */
     @Override
     public Router execute(RequestContent content) {
+        SendEmail email = new SendEmail();
         Router router = new Router();
         DataValidator validator = new DataValidator();
                 Map<String, String> userParameters = new HashMap<>();
@@ -77,18 +70,20 @@ public class RegistrationCommand implements Command {
                 optionalUser = userServiceImpl.registerClient(userParameters);
                 if (optionalUser.isPresent()) {
                     user = optionalUser.get();
-//                                new MailSenderCommand("yasoziopat@gmail.com", "spilevskaya",
-//                                        "nanna.vit@gmail.com", "Test", "MailTest").start(); // FIXME: 18.02.2020
+//                // should be email sendTo -   user.getLogin() instead of ConstantName.REAL_EMAIL_FOR_TEST
+//                    user.getLogin();
+                             email.send(ConstantName.REAL_EMAIL_FOR_TEST,
+                                     MessageManager.getProperty(ConstantName.SUBJECT_SUCCESSFUL_REGISTRATION),
+                                     MessageManager.getProperty(ConstantName.EMAIL_SUCCESSFUL_REGISTRATION));
                     content.addSessionAttribute(ConstantName.ATTRIBUTE_USER, user);
                     content.addSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST, clientCleaningList);
-                    content.addSessionAttribute(ConstantName.ATTRIBUTE_CART_SUM, totalSum);
+                    content.addSessionAttribute(ConstantName.ATTRIBUTE_TOTAL_ORDER_SUM, totalSum);
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_CABINET));
                     router.setType(RouteType.REDIRECT);
                 } else {
                     content.addRequestAttribute(ConstantName.ATTRIBUTE_REGISTRATION_ERROR,
                             MessageManager.getProperty(ConstantName.MESSAGE_REGISTRATION_ERROR));
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_REGISTRATION));
-                    router.setType(RouteType.FORWARD);
                 }
             } else {
                 if (userServiceImpl.checkUserLogin(login)) {
@@ -102,12 +97,10 @@ public class RegistrationCommand implements Command {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_REGISTRATION_ERROR,
                         MessageManager.getProperty(ConstantName.MESSAGE_INCORRECT_INPUT_DATA));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_REGISTRATION));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
-            logger.error("Error while validating data", e);
+            logger.error("Error while client registration data", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
-            router.setType(RouteType.FORWARD);
         }
         return router;
     }

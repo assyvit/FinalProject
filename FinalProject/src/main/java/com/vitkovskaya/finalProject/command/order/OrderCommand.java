@@ -52,7 +52,7 @@ public class OrderCommand implements Command {
         String date = content.getRequestParameter(ConstantName.EXECUTING_DATE).trim();
         String paymentType = content.getRequestParameter(ConstantName.PARAMETER_PAYMENT_TYPE).trim();
         String comment = content.getRequestParameter(ConstantName.PARAMETER_ORDER_COMMENT).trim();
-        BigDecimal orderSum = new BigDecimal((content.getSessionAttribute(ConstantName.ATTRIBUTE_CART_SUM).toString()));
+        BigDecimal orderSum = new BigDecimal((content.getSessionAttribute(ConstantName.ATTRIBUTE_TOTAL_ORDER_SUM).toString()));
         inputData.put(ConstantName.PARAMETER_PAYMENT_TYPE, paymentType);
         inputData.put(ConstantName.EXECUTING_DATE, date);
         inputData.put(ConstantName.PARAMETER_ORDER_COMMENT, comment);
@@ -77,26 +77,28 @@ public class OrderCommand implements Command {
                                     MessageManager.getProperty(ConstantName.EMAIL_NEW_ORDER));
                         } else {
                             content.addRequestAttribute(ConstantName.ATTRIBUTE_ORDER_ERROR,
-                                    ConstantName.MESSAGE_ORDER_ERROR);
+                                    MessageManager.getProperty(ConstantName.MESSAGE_ORDER_ERROR));
                             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_CABINET));
                             router.setType(RouteType.FORWARD);
                         }
                     }
                     orderSum = new BigDecimal(ConstantName.ZERO_VALUE);
                     cleaningList = new ArrayList<>();
-                    content.addSessionAttribute(ConstantName.ATTRIBUTE_CART_SUM, orderSum);
+                    content.addSessionAttribute(ConstantName.ATTRIBUTE_TOTAL_ORDER_SUM, orderSum);
                     content.addSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST, cleaningList);
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_CABINET));
                     router.setType(RouteType.REDIRECT);
                 } else {
                     content.addRequestAttribute(ConstantName.ATTRIBUTE_ORDER_ERROR,
-                            ConstantName.MESSAGE_ORDER_ERROR);
+                            MessageManager.getProperty(ConstantName.MESSAGE_ORDER_ERROR));
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_CABINET));
-                    router.setType(RouteType.FORWARD); // FIXME: 20.02.2020
+                    router.setType(RouteType.FORWARD);
                 }
             } else {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_VALIDATED_MAP, inputData);
-                router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CHECK_OUT));
+                content.addRequestAttribute(ConstantName.ATTRIBUTE_ORDER_ERROR,
+                        MessageManager.getProperty(ConstantName.MESSAGE_ORDER_ERROR));
+                router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ORDER));
                 router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {

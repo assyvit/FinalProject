@@ -1,10 +1,8 @@
 package com.vitkovskaya.finalProject.service;
 
 import com.vitkovskaya.finalProject.command.ConstantName;
-
 import com.vitkovskaya.finalProject.entity.Cleaning;
 import com.vitkovskaya.finalProject.entity.CleaningItem;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -81,7 +79,6 @@ public class CleaningListAction {
      */
     public Set<Long> getCleanersId(List<CleaningItem> cleaningList) {
         Set<Long> cleanerIdSet = new HashSet<>();
-        //cleaningList.getList().stream().map(p -> p.getCleaning().getCleanerId()).collect(Collectors.toSet());
         for (CleaningItem item : cleaningList) {
             cleanerIdSet.add(item.getCleaning().getCleanerId());
         }

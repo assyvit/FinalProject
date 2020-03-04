@@ -11,20 +11,23 @@ import javax.servlet.http.HttpSessionBindingEvent;
 @WebListener
 public class SessionListenerImpl implements HttpSessionAttributeListener {
     private final static Logger logger = LogManager.getLogger();
+    private final static String ADD = "add: ";
+    private final static String REPLACE = "replace: ";
+    private final static String SEPARATE = " : ";
 
     @Override
     public void attributeAdded(HttpSessionBindingEvent event) {
         StringBuilder builder = new StringBuilder();
-        builder.append("add: ").append(event.getClass().getSimpleName()).append(" : ").append(event.getName()).
-                append(" : ").append(event.getValue());
+        builder.append(ADD).append(event.getClass().getSimpleName()).append(SEPARATE).append(event.getName()).
+                append(SEPARATE).append(event.getValue());
         logger.log(Level.DEBUG, builder.toString());
     }
 
     @Override
     public void attributeReplaced(HttpSessionBindingEvent event) {
         StringBuilder builder = new StringBuilder();
-        builder.append("replace: ").append(event.getClass().getSimpleName()).append(" : ").append(event.getName()).
-                append(" : ").append(event.getValue());
+        builder.append(REPLACE).append(event.getClass().getSimpleName()).append(SEPARATE).append(event.getName()).
+                append(SEPARATE).append(event.getValue());
         logger.log(Level.DEBUG, builder.toString());
     }
 

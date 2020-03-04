@@ -1,7 +1,6 @@
 package com.vitkovskaya.finalProject.dao;
 
 import com.vitkovskaya.finalProject.entity.Entity;
-import com.vitkovskaya.finalProject.pool.ProxyConnection;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,13 +60,7 @@ public abstract class AbstractDao<K, T extends Entity> {
      */
 
     public abstract boolean update(T entity) throws DaoException;
-
-    //  public abstract T update(T entity) throws DaoException;
-    public abstract boolean delete(K id);
-
-    public abstract boolean delete(T entity);
-
-    /**
+      /**
      * Sets the connection.
      */
     void setConnection(Connection connection) {

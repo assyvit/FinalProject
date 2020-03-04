@@ -3,11 +3,8 @@ package com.vitkovskaya.finalProject.command;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,9 +18,8 @@ import java.util.Map;
 public class RequestContent {
     private final static Logger logger = LogManager.getLogger();
     private HashMap<String, Object> requestAttributes;
-    private HashMap<String, String[]> requestParameters; // FIXME: 06.02.2020 String []
+    private HashMap<String, String[]> requestParameters;
     private HashMap<String, Object> sessionAttributes;
-    private String requestURI;
     private boolean invalidateSession;
 
     public boolean isInvalidateSession() {
@@ -39,15 +35,13 @@ public class RequestContent {
         this.requestParameters = new HashMap<>();
         this.sessionAttributes = new HashMap<>();
         extractValues(request);
-        getUri(request);
-        HttpSession session = request.getSession(); // FIXME: 21.02.2020
-        logger.log(Level.DEBUG, session.getCreationTime());
-    }
+             }
 
     /**
      * Methods for extracting information from request
      */
     public void extractValues(HttpServletRequest request) {
+        logger.log(Level.INFO, "Extract values from request");
         if (request.getParameterNames() != null) {
             Enumeration<String> paramNames = request.getParameterNames();
             while (paramNames.hasMoreElements()) {
@@ -77,6 +71,7 @@ public class RequestContent {
      * Method for inserting attributes from Maps
      */
     public void insertValues(HttpServletRequest request) {
+        logger.log(Level.INFO, "Insert values into request");
         if (invalidateSession) {
             request.getSession().invalidate();
         }
@@ -97,8 +92,7 @@ public class RequestContent {
 
     public String getRequestParameter(String parameterName) {
         String[] parameterValues = requestParameters.getOrDefault(parameterName, null);
-        return parameterValues != null ? parameterValues[0] : null; // FIXME: 16.02.2020
-//        return requestParameters.get(key); 
+        return parameterValues != null ? parameterValues[0] : null;
     }
 
     public Object getRequestAttribute(String attributeName) {
@@ -117,24 +111,4 @@ public class RequestContent {
         sessionAttributes.put(attributeName, attributeValue);
     }
 
-    private String getUri(HttpServletRequest request) {
-//        String header = request.getHeader("referer");
-//       requestURI = header.substring(header.lastIndexOf("/") + 1);
-        logger.log(Level.DEBUG, request.getPathInfo() + " ---> getPathInfo()");
-        logger.log(Level.DEBUG, request.getHeader("referer") + " ---> getHeader(referer)");
-        logger.log(Level.DEBUG, request.getQueryString() + "  ---> getQueryString()");
-        logger.log(Level.DEBUG, request.getContextPath() + "  ---> getContextPath()");
-        logger.log(Level.DEBUG, request.getRequestURI() + "  ---> getRequestURI()");
-        logger.log(Level.DEBUG, request.getRequestURL() + "  ---> getRequestURL()");
-        logger.log(Level.DEBUG, request.getServletPath() + "  ---> getServletPath()");
-
-
-        return requestURI = request.getRequestURI() + request.getQueryString();
-    }
-
-    public String getURI() {
-
-        return requestURI;
-    }
-    // FIXME: 06.02.2020  toString()
-}
+   }

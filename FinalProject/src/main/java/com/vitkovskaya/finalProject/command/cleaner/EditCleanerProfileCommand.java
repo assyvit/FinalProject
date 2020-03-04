@@ -15,7 +15,20 @@ import java.util.Map;
 
 public class EditCleanerProfileCommand implements Command {
     private final static Logger logger = LogManager.getLogger();
-
+    /**
+     * Gets first name, last name, address, telephone number.
+     * Validates this values, if input data is not valid,
+     * returns router to the same page with message about invalid values.
+     * Otherwise, edits cleaner and returns router to the same page.
+     * Not allowed to change cleaner id.
+     *
+     * @param content an {@link RequestContent} object that
+     *                contains the request the client has made
+     *                of the servlet
+     * @return a {@code Router} object
+     * @see DataValidator#validateUserUpdateDate(Map)
+     * @see CleanerServiceImpl#updateCleaner(Cleaner) 
+     */
     @Override
     public Router execute(RequestContent content) {
         DataValidator validator = new DataValidator();
@@ -35,7 +48,6 @@ public class EditCleanerProfileCommand implements Command {
         Cleaner cleaner = new Cleaner(userId, firstName, lastName, address, telephoneNumber);
         try {
             validator.validateUserUpdateDate(userParameters);
-
             if (!userParameters.containsValue(ConstantName.ATTRIBUTE_EMPTY_VALUE)) {
                 if (cleanerService.updateCleaner(cleaner)) {
                     content.addSessionAttribute(ConstantName.ATTRIBUTE_USER_PROFILE, cleaner);
@@ -45,7 +57,6 @@ public class EditCleanerProfileCommand implements Command {
                     content.addRequestAttribute(ConstantName.ATTRIBUTE_EDIT_PROFILE_ERROR,
                             MessageManager.getProperty(ConstantName.MESSAGE_EDIT_PROFILE_ERROR));
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLEANER_PROFILE));
-                    router.setType(RouteType.FORWARD);
                 }
             } else {
                 content.addSessionAttribute(ConstantName.ATTRIBUTE_USER_PROFILE, cleaner);
@@ -53,12 +64,10 @@ public class EditCleanerProfileCommand implements Command {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_EDIT_PROFILE_ERROR,
                         MessageManager.getProperty(ConstantName.MESSAGE_INCORRECT_INPUT_DATA));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLEANER_PROFILE));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
-            logger.error("Error while executing command", e);
+            logger.error("Error while editing cleaner", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
-            router.setType(RouteType.FORWARD);
         }
         return router;
     }

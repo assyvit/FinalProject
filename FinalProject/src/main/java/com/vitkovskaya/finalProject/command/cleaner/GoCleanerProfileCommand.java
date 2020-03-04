@@ -7,7 +7,6 @@ import com.vitkovskaya.finalProject.service.ServiceException;
 import com.vitkovskaya.finalProject.service.serviceImpl.CleanerServiceImpl;
 import com.vitkovskaya.finalProject.util.ConfigurationManager;
 import com.vitkovskaya.finalProject.util.MessageManager;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,20 +21,17 @@ public class GoCleanerProfileCommand implements Command {
         CleanerServiceImpl cleanerService = new CleanerServiceImpl();
         User user = (User) content.getSessionAttribute(ConstantName.PARAMETER_USER);
         Long cleanerId = user.getUserId();
-        logger.log(Level.DEBUG, cleanerId);
         try {
             Optional<Cleaner> cleanerOptional = cleanerService.findCleanerById(cleanerId);
             if (cleanerOptional.isPresent()) {
                 Cleaner cleaner = cleanerOptional.get();
-                logger.log(Level.DEBUG, cleaner);
-           //     content.addRequestAttribute(ConstantName.ATTRIBUTE_VALIDATED_MAP, cleaner);
+                content.addSessionAttribute(ConstantName.ATTRIBUTE_USER_PROFILE, cleaner);
+//                content.addRequestAttribute(ConstantName.ATTRIBUTE_VALIDATED_MAP, cleaner);
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLEANER_PROFILE));
-                router.setType(RouteType.FORWARD);
             } else {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_EDIT_PROFILE_ERROR,
                         MessageManager.getProperty(ConstantName.MESSAGE_PROFILE_SHOW_ERROR));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLEANER_CABINET));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
             logger.error("Error while executing command", e);

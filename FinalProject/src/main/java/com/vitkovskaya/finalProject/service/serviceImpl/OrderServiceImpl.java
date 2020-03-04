@@ -1,9 +1,10 @@
 package com.vitkovskaya.finalProject.service.serviceImpl;
 
-
 import com.vitkovskaya.finalProject.dao.DaoException;
 import com.vitkovskaya.finalProject.dao.EntityTransaction;
+import com.vitkovskaya.finalProject.dao.impl.CleanerDaoImpl;
 import com.vitkovskaya.finalProject.dao.impl.CleaningDaoImpl;
+import com.vitkovskaya.finalProject.dao.impl.ClientDaoImpl;
 import com.vitkovskaya.finalProject.dao.impl.OrderDaoImpl;
 import com.vitkovskaya.finalProject.entity.*;
 import com.vitkovskaya.finalProject.service.CleaningListAction;
@@ -13,32 +14,29 @@ import com.vitkovskaya.finalProject.util.DataTimeParser;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * The {@code OrderServiceImpl} class
- * contains methods to provide logic operations with {@code Order} objects.
- */
-
 public class OrderServiceImpl implements OrderService {
     private final static Logger logger = LogManager.getLogger();
-
     @Override
     public List<Order> findAllClientOrders(Long id) throws ServiceException {
         OrderDaoImpl orderDao = new OrderDaoImpl();
         CleaningDaoImpl cleaningDao = new CleaningDaoImpl();
+        CleanerDaoImpl cleanerDao = new CleanerDaoImpl();
         EntityTransaction transaction = new EntityTransaction();
         List<Order> orderList;
-        transaction.begin(orderDao, cleaningDao);
+        transaction.begin(orderDao, cleaningDao, cleanerDao);
         try {
             orderList = orderDao.findAllOrderByClientId(id);
-            for (Order order: orderList) {
+            for (Order order : orderList) {
                 List<CleaningItem> itemList = cleaningDao.findCleaningsInOrder(order.getId());
+                Optional<Cleaner> cleaner = cleanerDao.findByOrderId(order.getId());
+                if (cleaner.isPresent()) {
+                    order.setCleaner(cleaner.get());
+                }
                 order.setCleaningList(itemList);
             }
             transaction.commit();
@@ -56,15 +54,21 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> findAllCleanerOrders(Long id) throws ServiceException {
         OrderDaoImpl orderDao = new OrderDaoImpl();
         CleaningDaoImpl cleaningDao = new CleaningDaoImpl();
+        ClientDaoImpl clientDao = new ClientDaoImpl();
         EntityTransaction transaction = new EntityTransaction();
         List<Order> orderList;
-        transaction.begin(orderDao, cleaningDao);
+        transaction.begin(orderDao, cleaningDao, clientDao);
         try {
             orderList = orderDao.findAllOrderByCleanerId(id);
-            for (Order order: orderList) {
+            for (Order order : orderList) {
                 List<CleaningItem> itemList = cleaningDao.findCleaningsInOrder(order.getId());
+                Optional<Client> client = clientDao.findByOrderId(order.getId());
+                if (client.isPresent()) {
+                    order.setClient(client.get());
+                }
                 order.setCleaningList(itemList);
             }
+            Collections.reverse(orderList);
             transaction.commit();
         } catch (DaoException e) {
             transaction.rollback();
@@ -85,10 +89,11 @@ public class OrderServiceImpl implements OrderService {
         transaction.begin(orderDao, cleaningDao);
         try {
             orderList = orderDao.findAll();
-            for (Order order: orderList) {
+            for (Order order : orderList) {
                 List<CleaningItem> itemList = cleaningDao.findCleaningsInOrder(order.getId());
                 order.setCleaningList(itemList);
             }
+            Collections.reverse(orderList);
             transaction.commit();
         } catch (DaoException e) {
             transaction.rollback();
@@ -102,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Map<Long, Long> createOrder(User user, String date, String paymentType, String comment,
-                            List<CleaningItem> orderCleaningList) throws ServiceException {
+                                       List<CleaningItem> orderCleaningList) throws ServiceException {
         DataTimeParser parser = new DataTimeParser();
         CleaningListAction action = new CleaningListAction();
         OrderDaoImpl orderDao = new OrderDaoImpl();
@@ -118,14 +123,12 @@ public class OrderServiceImpl implements OrderService {
                 BigDecimal orderSumSub = action.calculateTotalSum(subList);
                 Order order = new Order(orderSumSub, LocalDateTime.now(), parser.getTime(date), OrderStatus.NEW,
                         PaymentType.valueOf(paymentType.toUpperCase()), false, comment);
-                logger.log(Level.DEBUG, "FROM CREATE ORDER");
                 orderDao.create(order);
                 createdId = order.getId();
                 resultMap.put(cleanerId, createdId);
                 orderDao.linkOrderClient(user.getUserId(), createdId, subList.size());
                 orderDao.linkOrderCleaner(cleanerId, createdId);
                 for (CleaningItem item : subList) {
-               //     Cleaning cleaning = ;
                     orderDao.linkOrderCleaning(item.getCleaning().getId(), createdId, item.getQuantity());
                 }
                 transaction.commit();
@@ -139,8 +142,7 @@ public class OrderServiceImpl implements OrderService {
         }
         return resultMap;
     }
-
-      @Override
+    @Override
     public boolean changeOrderStatus(long orderId, OrderStatus orderStatus) throws ServiceException {
         boolean updated;
         OrderDaoImpl orderDao = new OrderDaoImpl();
@@ -156,15 +158,14 @@ public class OrderServiceImpl implements OrderService {
         }
         return updated;
     }
-
     @Override
-    public boolean changePaymentStatus(long orderId, OrderStatus orderStatus) throws ServiceException {
+    public boolean changePaymentStatus(long orderId) throws ServiceException {
         boolean updated;
         OrderDaoImpl orderDao = new OrderDaoImpl();
         EntityTransaction transaction = new EntityTransaction();
         transaction.begin(orderDao);
         try {
-            orderDao.updateOrderStatus(orderId, orderStatus);
+            orderDao.updateOrderStatus(orderId, OrderStatus.FULFILLED);
             updated = orderDao.updatePaymentStatus(orderId);
             transaction.commit();
         } catch (DaoException e) {
@@ -176,5 +177,4 @@ public class OrderServiceImpl implements OrderService {
         }
         return updated;
     }
-
 }

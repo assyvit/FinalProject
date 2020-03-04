@@ -36,7 +36,7 @@ public class RemoveFromOrderListCommand implements Command {
         Long itemId = Long.valueOf(content.getRequestParameter(ConstantName.ATTRIBUTE_CLEANING_ID));
         action.removeItem(cleaningList, itemId);
         BigDecimal totalSum = action.calculateTotalSum(cleaningList);
-        content.addSessionAttribute(ConstantName.ATTRIBUTE_CART_SUM, totalSum);
+        content.addSessionAttribute(ConstantName.ATTRIBUTE_TOTAL_ORDER_SUM, totalSum);
         content.addSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST, cleaningList);
         router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_GO_TO_CLEANING_LIST));
         router.setType(RouteType.FORWARD);

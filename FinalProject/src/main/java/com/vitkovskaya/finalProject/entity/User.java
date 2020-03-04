@@ -1,11 +1,5 @@
 package com.vitkovskaya.finalProject.entity;
 
-/**
- * The {@code User} class
- * is an entity that represents table 'user' in the database.
- * <p>
- * Overrides equals(), hashcode(), toString() methods.
- */
 public class User extends Entity {
     private UserRole userRole;
     private long userId;
@@ -13,17 +7,14 @@ public class User extends Entity {
     private String password;
     private boolean isActive;
     private String avatarPath;
-
     public User() {
     }
-
     public User(UserRole userRole, String login, String password, boolean isActive) {
         this.userRole = userRole;
         this.login = login;
         this.password = password;
         this.isActive = isActive;
     }
-
     public User(UserRole userRole, long id, String login, String password, boolean isActive) {
         this.userRole = userRole;
         this.userId = id;
@@ -31,59 +22,62 @@ public class User extends Entity {
         this.password = password;
         this.isActive = isActive;
     }
-
+    public User(UserRole userRole, long id, String login, String password, boolean isActive, String avatarPath) {
+        this.userRole = userRole;
+        this.userId = id;
+        this.login = login;
+        this.password = password;
+        this.isActive = isActive;
+        this.avatarPath = avatarPath;
+    }
+    public User(UserRole userRole, String login, String password, boolean isActive, String avatarPath) {
+        this.userRole = userRole;
+        this.login = login;
+        this.password = password;
+        this.isActive = isActive;
+        this.avatarPath = avatarPath;
+    }
     public UserRole getUserRole() {
         return userRole;
     }
-
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
     }
-
     public String getLogin() {
         return login;
     }
-
     public void setLogin(String login) {
         this.login = login;
     }
-
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
     public long getUserId() {
         return userId;
     }
-
     public void setUserId(long userId) {
         this.userId = userId;
     }
-
     public boolean getIsActive() {
         return isActive;
     }
-
     public void setIsActive(boolean active) {
         isActive = active;
     }
-
     public String getAvatarPath() {
         return avatarPath;
     }
-
     public void setAvatarPath(String avatarPath) {
         this.avatarPath = avatarPath;
     }
-
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o) {
+            return true;
+        }
         if (o == null) {
             return false;
         }
@@ -108,7 +102,6 @@ public class User extends Entity {
         }
         return avatarPath != null ? avatarPath.equals(user.avatarPath) : user.avatarPath == null;
     }
-
     @Override
     public int hashCode() {
         int result = userRole != null ? userRole.hashCode() : 0;
@@ -119,7 +112,6 @@ public class User extends Entity {
         result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
         return result;
     }
-
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();

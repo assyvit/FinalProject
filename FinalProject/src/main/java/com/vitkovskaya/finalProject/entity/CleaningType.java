@@ -9,7 +9,4 @@ public enum CleaningType {
     REGULAR_CLEANING,
     WASHING,
     OTHER
-
-
-
 }

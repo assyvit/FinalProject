@@ -33,26 +33,11 @@ public class CleaningDaoImpl extends AbstractDao<Long, Cleaning> implements Clea
             " FROM cleaning  WHERE  cleaning_id= ?";
     private final static String SQL_CREATE_CLEANING = "INSERT INTO cleaning (cleaning_name, " +
             " price_per_unit, cleaning_type, cleaning_description, cleaning_quantity, available_status, fk_cleaner_id)" +
-            " VALUES (?, ?, ?, ?, ?, ?, ?)"; // FIXME: 21.01.2020
+            " VALUES (?, ?, ?, ?, ?, ?, ?)";
     private final static String SQL_UPDATE_CLEANING = "UPDATE cleaning SET cleaning_name= ?, price_per_unit= ?, " +
-            " cleaning_type = ?, cleaning_description= ?, cleaning_quantity= ? WHERE cleaning_id= ?"; // FIXME: 22.01.2020
+            " cleaning_type = ?, cleaning_description= ?, cleaning_quantity= ? WHERE cleaning_id= ?";
     private final static String SQL_UPDATE_CLEANING_STATUS = "UPDATE cleaning SET available_status= ? " +
-            " WHERE cleaning_id= ?"; // FIXME: 22.01.2020
-    private final static String SQL_SELECT_CLEANING_BY_NAME = "SELECT cleaning_id, cleaning_name," +
-            " price_per_unit, cleaning_type, cleaning_description, cleaning_quantity, available_status, fk_cleaner_id" +
-            " FROM cleaning WHERE cleaning_name= ?";
-    private final static String SQL_SELECT_BY_MIN_CLEANING_PRICE = "SELECT  cleaning_id, cleaning_name, " +
-            "price_per_unit, cleaning_type, cleaning_description, cleaning_quantity, available_status, fk_cleaner_id" +
-            " FROM cleaning WHERE price_per_unit = (SELECT MIN(price_per_unit) FROM cleaning)";
-    private final static String SQL_SELECT_BY_MAX_CLEANING_PRICE = "SELECT  cleaning_id, cleaning_name, " +
-            "price_per_unit, cleaning_type, cleaning_description, cleaning_quantity, available_status, fk_cleaner_id" +
-            " FROM cleaning WHERE price_per_unit = (SELECT MAX(price_per_unit) FROM cleaning)";
-    private final static String SQL_SELECT_CLEANING_BY_TYPE = "SELECT cleaning_id, cleaning_name," +
-            " price_per_unit, cleaning_type, cleaning_description, cleaning_quantity, available_status, fk_cleaner_id" +
-            " FROM cleaning WHERE cleaning_type= ?";
-    private final static String SQL_SELECT_CLEANING_BY_PRICE_FROM_TO = "SELECT cleaning_id, cleaning_name," +
-            " price_per_unit, cleaning_type, cleaning_description, cleaning_quantity, available_status, fk_cleaner_id" +
-            " FROM cleaning WHERE price_per_unit BETWEEN ? AND ?";
+            " WHERE cleaning_id= ?";
     private final static String SQL_SELECT_CLEANING_BY_CLEANER_ID = "SELECT cleaning_id, cleaning_name, price_per_unit, " +
             "cleaning_type, cleaning_description, cleaning_quantity, available_status, fk_cleaner_id" +
             " FROM cleaning WHERE fk_cleaner_id = ?";
@@ -110,7 +95,7 @@ public class CleaningDaoImpl extends AbstractDao<Long, Cleaning> implements Clea
         boolean created = false;
         PreparedStatement statement = null;
         try {
-            statement = connection.prepareStatement(SQL_CREATE_CLEANING, Statement.RETURN_GENERATED_KEYS); // FIXME: 08.02.2020
+            statement = connection.prepareStatement(SQL_CREATE_CLEANING, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, cleaning.getName());
             statement.setBigDecimal(2, cleaning.getPrice());
             statement.setString(3, cleaning.getCleaningType().toString().toLowerCase());
@@ -153,146 +138,6 @@ public class CleaningDaoImpl extends AbstractDao<Long, Cleaning> implements Clea
         return updated;
     }
 
-//    @Override
-//    public Cleaning update(Cleaning cleaning) throws DaoException {
-//        PreparedStatement statement = null;
-//        Cleaning updatedCleaning;
-//        updatedCleaning = findById(cleaning.getId()).
-//                orElseThrow(() -> new DaoException("User not found")); // FIXME: 22.01.2020
-//        try {
-//            statement = connection.prepareStatement(SQL_UPDATE_CLEANING);
-//            statement.setString(1, cleaning.getName());
-//            statement.setBigDecimal(2, cleaning.getPrice());
-//            statement.setString(3, cleaning.getCleaningType().toString().toLowerCase());
-//            statement.setString(4, cleaning.getDescription());
-//            statement.setInt(5, cleaning.getQuantity());
-//            statement.setBoolean(6, cleaning.getIsAvailable());
-//            statement.setLong(7, cleaning.getCleanerId());
-//            statement.setLong(8, cleaning.getId());
-//            statement.executeUpdate();
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "SQL exception (request or table failed): ", e);
-//            throw new DaoException(e);
-//        } finally {
-//            close(statement);
-//        }
-//        return updatedCleaning;
-//    }
-
-    @Override
-    public boolean delete(Long id) {
-        return false;
-    }
-
-    @Override
-    public boolean delete(Cleaning entity) {
-        return false;
-    }
-
-    @Override
-    public List<Cleaning> findByName(String patternName) throws DaoException {
-        List<Cleaning> cleaningList = new ArrayList<>();
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(SQL_SELECT_CLEANING_BY_NAME);
-            statement.setString(1, patternName);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Cleaning cleaning = extractCleaning(resultSet);
-                cleaningList.add(cleaning);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.ERROR, "SQL exception (request or table failed): ", e);
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-        }
-        return cleaningList;
-    }
-
-    @Override // FIXME: 31.01.2020 
-    public List<Cleaning> findByMinPrice() throws DaoException {
-        List<Cleaning> cleaningList = new ArrayList<>();
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(SQL_SELECT_BY_MIN_CLEANING_PRICE);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Cleaning cleaning = extractCleaning(resultSet);
-                cleaningList.add(cleaning);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.ERROR, "SQL exception (request or table failed): ", e);
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-        }
-        return cleaningList;
-    }
-
-    @Override // FIXME: 31.01.2020 
-    public List<Cleaning> findByMaxPrice() throws DaoException {
-        List<Cleaning> cleaningList = new ArrayList<>();
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(SQL_SELECT_BY_MAX_CLEANING_PRICE);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Cleaning cleaning = extractCleaning(resultSet);
-                cleaningList.add(cleaning);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.ERROR, "SQL exception (request or table failed): ", e);
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-        }
-        return cleaningList;
-    }
-
-    @Override
-    public List<Cleaning> findByPriceFromTo(int priceFrom, int priceTo) throws DaoException {
-        List<Cleaning> cleaningList = new ArrayList<>();
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(SQL_SELECT_CLEANING_BY_PRICE_FROM_TO);
-            statement.setInt(1, priceFrom);
-            statement.setInt(2, priceTo);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Cleaning cleaning = extractCleaning(resultSet);
-                cleaningList.add(cleaning);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.ERROR, "SQL exception (request or table failed): ", e);
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-        }
-        return cleaningList;
-    }
-
-    @Override
-    public List<Cleaning> findByServiceType(CleaningType cleaningType) throws DaoException {
-        List<Cleaning> cleaningList = new ArrayList<>();
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(SQL_SELECT_CLEANING_BY_TYPE);
-            statement.setString(1, cleaningType.toString().toLowerCase());
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Cleaning cleaning = extractCleaning(resultSet);
-                cleaningList.add(cleaning);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.ERROR, "SQL exception (request or table failed): ", e);
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-        }
-        return cleaningList;
-    }
-
     @Override
     public List<Cleaning> findByCleanerId(long cleaningId) throws DaoException {
         List<Cleaning> cleaningList = new ArrayList<>();
@@ -312,14 +157,6 @@ public class CleaningDaoImpl extends AbstractDao<Long, Cleaning> implements Clea
             close(statement);
         }
         return cleaningList;
-    }
-
-    @Override
-    public Optional<BigDecimal> findPriceById(long cleaningId) throws DaoException {
-
-        // FIXME: 10.02.2020
-
-        return Optional.empty();
     }
 
     @Override

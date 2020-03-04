@@ -14,7 +14,8 @@ public class PasswordHashGenerator {
     private final static Logger logger = LogManager.getLogger();
     private final static String ALGORITHM = "SHA-1";
     private final static String CHARSET = "utf-8";
-
+    private final static int SIGNUM = 1;
+    private final static int RADIX = 16;
     public String hash(String password) {
         byte[] bytes = null;
         try {
@@ -24,19 +25,7 @@ public class PasswordHashGenerator {
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             logger.log(Level.ERROR, "Hashing password error", e);
         }
-        BigInteger bigInteger = new BigInteger(1, bytes);
-        return bigInteger.toString(16);
+        BigInteger bigInteger = new BigInteger(SIGNUM, bytes);
+        return bigInteger.toString(RADIX);
     }
-
-    public String hash2(String password) {
-        byte[] bytes = null;
-        Base64.Encoder encoder = Base64.getEncoder();
-        try {
-            bytes = encoder.encode(password.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        BigInteger bigInteger = new BigInteger(1, bytes);
-        return bigInteger.toString(16);
-    }
-}
+   }

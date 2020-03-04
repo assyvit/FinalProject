@@ -7,7 +7,6 @@ import com.vitkovskaya.finalProject.service.ServiceException;
 import com.vitkovskaya.finalProject.service.serviceImpl.OrderServiceImpl;
 import com.vitkovskaya.finalProject.util.ConfigurationManager;
 import com.vitkovskaya.finalProject.util.MessageManager;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,24 +32,23 @@ public class ShowClientOrdersCommand implements Command {
         OrderServiceImpl orderService = new OrderServiceImpl();
         List<Order> orderList;
         User user = (User) content.getSessionAttribute(ConstantName.ATTRIBUTE_USER);
+        String start = content.getRequestParameter(ConstantName.PARAMETER_PAGE_START);
         Long id = user.getUserId();
-        logger.log(Level.DEBUG, id);
         try {
             orderList = orderService.findAllClientOrders(id);
             if (!orderList.isEmpty()) {
+                content.addSessionAttribute(ConstantName.ATTRIBUTE_START, start);
                 content.addSessionAttribute(ConstantName.ATTRIBUTE_CLIENT_ORDER_LIST, orderList);
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_ORDERS));
-                router.setType(RouteType.FORWARD);
             } else {
+                content.addSessionAttribute(ConstantName.ATTRIBUTE_START, start);
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_SHOW_ORDERS_ERROR,
                         MessageManager.getProperty(ConstantName.MESSAGE_SHOW_ORDER_ERROR));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_ORDERS));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
-            logger.error("Error while executing command", e);
+            logger.error("Error while getting all client orders", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
-            router.setType(RouteType.FORWARD);
         }
         return router;
 

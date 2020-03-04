@@ -10,18 +10,16 @@ import java.sql.SQLException;
 
 public class EntityTransaction {
     private final static Logger logger = LogManager.getLogger();
+    private ProxyConnection connection;
 
     public EntityTransaction() {
     }
-
-    private ProxyConnection connection;
 
     public void beginNoTransaction(AbstractDao dao) {
         if (connection == null) {
             connection = (ProxyConnection) ConnectionPool.getInstance().getConnection();
         }
         dao.setConnection(connection);
-
     }
 
     public void begin(AbstractDao dao, AbstractDao... daos) {
@@ -31,7 +29,7 @@ public class EntityTransaction {
         try {
             connection.setAutoCommit(false);
         } catch (SQLException e) {
-            logger.log(Level.ERROR, e); // FIXME: 15.01.2020
+            logger.log(Level.ERROR, " Error executing query ", e);
         }
         dao.setConnection(connection);
         for (AbstractDao daoElement : daos) {
@@ -40,12 +38,11 @@ public class EntityTransaction {
     }
 
     public void end() {
-// check of null connection
         if (connection != null) {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                logger.log(Level.ERROR, e); // FIXME: 15.01.2020
+                logger.log(Level.ERROR, " Error changing autocommit status",  e);
             }
             ConnectionPool.getInstance().releaseConnection(connection);
             connection = null;
@@ -53,13 +50,11 @@ public class EntityTransaction {
     }
 
     public void endNoTransaction() {
-// check of null connection
         if (connection != null) {
             ConnectionPool.getInstance().releaseConnection(connection);
             connection = null;
         }
     }
-
     public void commit() {
         try {
             connection.commit();

@@ -40,10 +40,13 @@ public class ConstantName {
     public final static String PARAMETER_ORDER_ID = "orderId";
     public final static String PARAMETER_ORDER_STATUS = "orderStatus";
     public final static String PARAMETER_LOCALE = "language";
-    public final static String PARAMETER_LOCALE_RU = "en_EN";
+    public final static String PARAMETER_LOCALE_RU = "ru_RU";
     public final static String PARAMETER_PAGE_START = "pageStart";
     public final static String PARAMETER_FILE_NAME = "fileName";
     public final static String PARAMETER_UPLOAD_DIRECTORY = "/uploads/";
+    public final static String PARAMETER_ACTIVE_STATUS = "isActive";
+    public final static String PARAMETER_LANGUAGE = "newLanguage";
+    public final static String LANGUAGE_ATTRIBUTE = "";
 
     // attributes
 
@@ -75,13 +78,13 @@ public class ConstantName {
     public final static String ATTRIBUTE_VALIDATED_MAP = "map";
     public final static String ATTRIBUTE_CLEANING = "cleaning";
     public final static String ATTRIBUTE_ORDER_LIST = "cleaningItemList";
-    public final static String ATTRIBUTE_CART_SUM = "totalSum";
+    public final static String ATTRIBUTE_TOTAL_ORDER_SUM = "totalSum";
     public final static String ATTRIBUTE_CLEANING_ID = "cleaningId";
-    public final static String ATTRIBUTE_ITEM_QUANTITY_IN_CART = "quantity";
+    public final static String ATTRIBUTE_ITEM_QUANTITY_IN_ORDER = "quantity";
     public final static String ATTRIBUTE_USER_PROFILE = "userProfile";
-    public final static String ATTRIBUTE_ITEM_LIST_IN_CART = "itemList";
-    public final static String ATTRIBUTE_EMPTY_CART_ERROR = "emptyCartError";
-    public final static String ATTRIBUTE_ADD_TO_CART_ERROR = "addToCartError";
+    public final static String ATTRIBUTE_ITEM_LIST_IN_ORDER = "itemList";
+    public final static String ATTRIBUTE_EMPTY_ORDER_ERROR = "emptyCartError";
+    public final static String ATTRIBUTE_ADD_TO_ORDER_ERROR = "addToCartError";
     public final static String ATTRIBUTE_BLOCK_USER = "blockUser";
     public final static String ATTRIBUTE_BLOCK_USER_ERROR = "blockUserError";
     public final static String ATTRIBUTE_PASSWORD_MATCH = "passwordMatch";
@@ -96,7 +99,8 @@ public class ConstantName {
     public final static String ATTRIBUTE_CLEANING_QUANTITY_INCORRECT = "incorrectQuantity";
     public final static String ATTR_CLEANING_TYPE_INCORRECT = "incorrectType";
     public final static String ATTR_CLEANING_DESCRIPTION_INCORRECT = "incorrectDescription";
-
+    public final static String ATTR_PARTS = "parts";
+    public final static String ATTR_LOCALE = "locale";
     public final static String ATTRIBUTE_USER_IS_BLOCKED_ERROR = "blockedUserError";
     public final static String ATTRIBUTE_EDIT_PROFILE_ERROR = "editProfileError";
     public final static String ATTRIBUTE_ORDER_ERROR = "orderError";
@@ -112,8 +116,10 @@ public class ConstantName {
     public final static String ATTRIBUTE_CLEANING_EDIT_ERROR = "cleaningEditError";
     public final static String ATTRIBUTE_START = "start";
     public final static String ATTRIBUTE_PAGE_PATH = "pagePath";
-
+    public final static String ATTRIBUTE_UPLOAD_SUCCESS = "uploadResult";
+    public final static String ATTRIBUTE_UPLOAD_FAIL = "uploadFail";
     // jsp path
+    public final static String JSP_INDEX = "path.page.index";
     public final static String JSP_MAIN = "path.page.main";
     public final static String JSP_LOGIN = "path.page.login";
     public final static String JSP_ADMIN_CABINET = "path.page.adminCabinet";
@@ -134,12 +140,11 @@ public class ConstantName {
     public final static String JSP_SHOW_ORDERS = "path.page.showOrders";
     public final static String JSP_SHOW_CLEANER_ORDERS = "path.page.cleanerOrders";
     public final static String JSP_CLIENT_PROFILE = "path.page.clientProfile";
-    public final static String JSP_CHECK_OUT = "path.page.order";
+    public final static String JSP_ORDER = "path.page.order";
     public final static String JSP_PASSWORD_CHANGE = "path.page.changePassword";
     public final static String JSP_PASSWORD_RECOVER = "path.page.recoverPassword";
     public final static String JSP_CLIENT_ORDERS = "path.page.clientOrders";
     public final static String JSP_CLEANER_CLEANINGS = "path.page.CleanerCleaning";
-    //  public final static String JSP_FILE_ = "path.page.CleanerCleaning";
     public final static String JSP_CLEANING_PROFILE = "path.page.CleaningProfile";
 
     // Messages
@@ -164,8 +169,8 @@ public class ConstantName {
     public final static String MESSAGE_SHOW_CLIENT_ERROR = "message.showClientError";
     public final static String MESSAGE_SHOW_CLEANING_ERROR = "message.showCleaningError";
     public final static String MESSAGE_NOT_UNIQ_LOGIN_ERROR = "message.notUniqLogin";
-    public final static String MESSAGE_EMPTY_CART = "message.emptyCart";
-    public final static String MESSAGE_ADD_TO_ORDER_LIST_ERROR = "message.addToCartError";
+    public final static String MESSAGE_EMPTY_ORDER = "message.emptyOrder";
+    public final static String MESSAGE_ADD_TO_ORDER_LIST_ERROR = "message.addToOrderError";
     public final static String MESSAGE_BLOCK_USER = "message.blockUser";
     public final static String MESSAGE_BLOCKING_ERROR = "message.blockingError";
     public final static String MESSAGE_INCORRECT_INPUT_DATA = "message.incorrectInputData";
@@ -183,13 +188,21 @@ public class ConstantName {
     public final static String MESSAGE_CLEANING_EDIT_ERROR = "message.cleaningEditError";
     public final static String MESSAGE_PROFILE_SHOW_ERROR = "message.profileShowError";
     public final static String MESSAGE_CLEANING_SHOW_ERROR = "message.cleaningShowError";
+    public final static String MESSAGE_UPLOAD_SUCCESS = "message.uploadResult";
+    public final static String MESSAGE_UPLOAD_FAIL = "message.uploadFail";
+
+
     //email constants
     public final static String SUBJECT_PASSWORD_RECOVER = "message.changePasswordSuccess";
     public final static String SUBJECT_NEW_ORDER = "message.newOrderSubject";
-    public final static String SUBJECT_SUCCESSFUL_REGISTRATION = "message.changePasswordSuccess";
-    public final static String EMAIL_PASSWORD_RECOVER = "your temporary password = 2016-Om-7";
+    public final static String SUBJECT_SUCCESSFUL_REGISTRATION = "message.registrationSuccessSubject";
+    public final static String EMAIL_SUCCESSFUL_REGISTRATION = "message.registrationSuccess";
+    public final static String EMAIL_PASSWORD_RECOVER = "Your temporary password = 2016-Om-7";
     public final static String EMAIL_TEMPORARY_PASSWORD = "2016-Om-7";
     public final static String EMAIL_NEW_ORDER = "message.newOrderText";
+    public final static String REAL_EMAIL_FOR_TEST = "nanna.vit@gmail.com";
+
+    public final static String COMMAND_MAIN = "/controller?command=go_to_main";
 }
 
 

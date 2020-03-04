@@ -1,15 +1,10 @@
 package com.vitkovskaya.finalProject.service;
 
-import com.vitkovskaya.finalProject.entity.Cleaner;
 import com.vitkovskaya.finalProject.entity.Client;
-import com.vitkovskaya.finalProject.entity.Order;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface ClientService {
-
     /**
      * Gets all clients from a database.
      *
@@ -17,19 +12,16 @@ public interface ClientService {
      * @throws ServiceException if {@code DaoException} occurs (database access error)
      */
     List<Client> findAllClients() throws ServiceException;
-
-
     /**
-     * Creates {@code Client} object and
-     * updates database with a new row that represents this object.
-     * If the update is successful, returns {@code true} if the table has such row, {@code false} otherwise
+     * Updates {@code Client} object -
+     * updates database values - first name, last name, address, telephone number
+     * for cleaner that should be edited.
+     * After the update, updated values are set to this {@code Client} object
      *
-     * @param clientId    a client id
-     * @param parameters  parameters to create client
-     * @return a  {@code true} if the table has such row, {@code false} otherwise
+     * @param client a {@code Client} that should be edited containing new values
      * @throws ServiceException if {@code DaoException} occurs (database access error)
+     * @return a {@code true} if (@code Client) was updated, {@code false} otherwise
      */
-    boolean registerClient(Long clientId, Map<String, String> parameters) throws ServiceException;
 
     boolean updateClient(Client client) throws ServiceException;
     /**
@@ -47,4 +39,5 @@ public interface ClientService {
      * @throws ServiceException if {@code DaoException} occurs (database access error)
      */
     Optional<Client> findById(Long clientId) throws ServiceException;
+     Optional<Client> findByCleaningId(Long cleaningtId) throws ServiceException;
 }

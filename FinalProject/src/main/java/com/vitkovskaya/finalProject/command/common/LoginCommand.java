@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * The {@code LoginCommand} class
- * is a command to log in (authorise) a user.
- */
 
 public class LoginCommand implements Command {
     private final static Logger logger = LogManager.getLogger();
@@ -52,60 +48,46 @@ public class LoginCommand implements Command {
         String login = content.getRequestParameter(ConstantName.PARAMETER_LOGIN);
         String password = content.getRequestParameter(ConstantName.PARAMETER_PASSWORD);
         try {
-            if (userServiceImpl.findUserByLoginAndPassword(login, password)) { // FIXME: 18.02.2020
-                // content.addRequestAttribute(ConstantName.PARAMETER_USER, login);
+            if (userServiceImpl.findUserByLoginAndPassword(login, password)) {
                 Optional<User> userOptional = userServiceImpl.findByLogin(login);
                 if (userOptional.isPresent()) {
                     user = userOptional.get();
-//                    if (true)                    {
-                    //                    user.getIsActive()
-                    content.addSessionAttribute(ConstantName.ATTRIBUTE_USER, user);
-                    UserRole userRole = user.getUserRole();
-                    switch (userRole) {
-                        case ADMIN:
-                            router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ADMIN_CABINET));
-                            router.setType(RouteType.FORWARD);
-                            break;
-                        case CLEANER:
-                            Cleaner cleaner = cleanerService.findCleanerById(user.getUserId()).get(); // FIXME: 19.02.2020
-                            content.addSessionAttribute(ConstantName.ATTRIBUTE_USER_PROFILE, cleaner);
-                            router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLEANER_CABINET));
-                            router.setType(RouteType.FORWARD);
-                            break;
-                        case CLIENT:
-                            Client client = clientService.findById(user.getUserId()).get();
-                            logger.log(Level.DEBUG, client);
-                            content.addSessionAttribute(ConstantName.ATTRIBUTE_USER_PROFILE, client);
-                            content.addSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST, clientCleaningList);
-                            content.addSessionAttribute(ConstantName.ATTRIBUTE_CART_SUM, totalSum);
-                            router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_CABINET));
-                            router.setType(RouteType.FORWARD);
-                            break;
-                        default:
-                            router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_MAIN));
-                            router.setType(RouteType.REDIRECT);
+                    if (user.getIsActive()) {
+                        content.addSessionAttribute(ConstantName.ATTRIBUTE_USER, user);
+                        UserRole userRole = user.getUserRole();
+                        switch (userRole) {
+                            case ADMIN:
+                                router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ADMIN_CABINET));
+                                break;
+                            case CLEANER:
+                                router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLEANER_CABINET));
+                                break;
+                            case CLIENT:
+                                content.addSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST, clientCleaningList);
+                                content.addSessionAttribute(ConstantName.ATTRIBUTE_TOTAL_ORDER_SUM, totalSum);
+                                router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLIENT_CABINET));
+                                break;
+                            default:
+                                router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_MAIN));
+                        }
+                    } else {
+                        content.addRequestAttribute(ConstantName.ATTRIBUTE_USER_IS_BLOCKED_ERROR,
+                                MessageManager.getProperty(ConstantName.MESSAGE_BLOCKED_USER_ERROR));
+                        router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_LOGIN));
+                        router.setType(RouteType.FORWARD);
                     }
-//                    } else {
-//                        content.addRequestAttribute(ConstantName.ATTRIBUTE_USER_IS_BLOCKED_ERROR,
-//                                MessageManager.getProperty(ConstantName.MESSAGE_BLOCKED_USER_ERROR));
-//                        router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_LOGIN));
-//                        router.setType(RouteType.FORWARD);
-//                    }
                 } else {
-                    logger.log(Level.DEBUG, "Can't signIn");
-                    content.addRequestAttribute(ConstantName.ATTRIBUTE_LOGIN_ERROR, // FIXME: 18.02.2020
+                    content.addRequestAttribute(ConstantName.ATTRIBUTE_LOGIN_ERROR,
                             MessageManager.getProperty(ConstantName.MESSAGE_LOGIN_ERROR));
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_LOGIN));
-                    router.setType(RouteType.FORWARD);
                 }
             } else {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_LOGIN_ERROR,
                         MessageManager.getProperty(ConstantName.MESSAGE_LOGIN_ERROR));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_LOGIN));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
-            logger.error("Error while validating data", e); // FIXME: 18.02.2020 
+            logger.error("Error while login command", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
             router.setType(RouteType.REDIRECT);
         }

@@ -16,21 +16,12 @@ import com.vitkovskaya.finalProject.util.PasswordHashGenerator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
     private final static Logger logger = LogManager.getLogger();
-
-    /**
-     * Checks if row with login and password exists in database.
-     *
-     * @param login    a user login
-     * @param password a user password
-     * @return a {@code true} if row exists, {@code false} otherwise
-     * @throws ServiceException if {@code DaoException} occurs (database access error)
-     */
     @Override
     public boolean findUserByLoginAndPassword(String login, String password) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
@@ -40,23 +31,15 @@ public class UserServiceImpl implements UserService {
         String hashPassword = hashGenerator.hash(password);
         transaction.beginNoTransaction(userDao);
         try {
-            flag = userDao.findUserByLoginAndPassword(login, hashPassword); // FIXME: 07.02.2020
+            flag = userDao.findUserByLoginAndPassword(login, hashPassword);
         } catch (DaoException e) {
-            logger.log(Level.ERROR, "Exception while committing transaction", e);
+            logger.log(Level.ERROR, "Exception while executing service", e);
             throw new ServiceException(e);
         } finally {
             transaction.endNoTransaction();
         }
         return flag;
     }
-
-    /**
-     * Checks, if this login is free (no rows in database with such login)
-     *
-     * @param login a login value to check
-     * @return a {@code true} if this login is free, {@code false} otherwise
-     * @throws ServiceException if {@code DaoException} occurs (database access error)
-     */
     @Override
     public boolean checkUserLogin(String login) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
@@ -66,30 +49,13 @@ public class UserServiceImpl implements UserService {
         try {
             exists = userDao.checkUserLogin(login);
         } catch (DaoException e) {
-            logger.log(Level.ERROR, "Exception while committing transaction", e);
+            logger.log(Level.ERROR, "Exception while executing service", e);
             throw new ServiceException(e);
         } finally {
             transaction.end();
         }
         return exists;
     }
-
-//    @Override
-//    public boolean validateLoginPassword(String login, String password, String passwordConfirmation) {
-//        DataValidator validator = new DataValidator();
-//        logger.log(Level.DEBUG, "validateLoginPassword");
-//        return validator.validateLogin(login) && (validator.validatePassword(password) &&
-//                validator.doublePasswordCheck(password, passwordConfirmation));
-//    }
-
-//    @Override
-//    public boolean validateChangedPassword(String newPassword, String passwordConfirmation) {
-//        DataValidator validator = new DataValidator();
-//        return validator.doublePasswordCheck(newPassword, passwordConfirmation) &&
-//                validator.validatePassword(newPassword) &&
-//                validator.validatePassword(passwordConfirmation);
-//    }
-
     @Override
     public boolean changePassword(User user, String newPassword) throws ServiceException {
         boolean updated;
@@ -108,7 +74,6 @@ public class UserServiceImpl implements UserService {
         }
         return updated;
     }
-
     @Override
     public long registerUser(String login, String password, UserRole userRole) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
@@ -125,14 +90,13 @@ public class UserServiceImpl implements UserService {
             userDao.create(user);
             userId = userDao.getUserId(login);
         } catch (DaoException e) {
-            logger.log(Level.ERROR, "Exception while committing transaction", e);
+            logger.log(Level.ERROR, "Exception while executing service", e);
             throw new ServiceException(e);
         } finally {
             transaction.endNoTransaction();
         }
         return userId;
     }
-
     @Override
     public Optional<User> registerCleaner(Map<String, String> parameters) throws ServiceException {
         Optional<User> optionalUser;
@@ -157,7 +121,7 @@ public class UserServiceImpl implements UserService {
             cleaner.setFirstName(parameters.get(ConstantName.PARAMETER_FIRST_NAME));
             cleaner.setLastName(parameters.get(ConstantName.PARAMETER_LAST_NAME));
             cleaner.setAddress(parameters.get(ConstantName.PARAMETER_ADDRESS));
-            cleaner.setTelephoneNumber(parameters.get(ConstantName.PARAMETER_ADDRESS));
+            cleaner.setTelephoneNumber(parameters.get(ConstantName.PARAMETER_TELEPHONE_NUMBER));
             cleanerDao.create(cleaner);
             transaction.commit();
         } catch (DaoException e) {
@@ -169,7 +133,6 @@ public class UserServiceImpl implements UserService {
         }
         return optionalUser;
     }
-
     @Override
     public Optional<User> registerClient(Map<String, String> parameters) throws ServiceException {
         Optional<User> optionalUser;
@@ -206,7 +169,6 @@ public class UserServiceImpl implements UserService {
         }
         return optionalUser;
     }
-
     @Override
     public int getUserRoleId(String login) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
@@ -216,14 +178,13 @@ public class UserServiceImpl implements UserService {
         try {
             roleId = userDao.getUserRoleId(login);
         } catch (DaoException e) {
-            logger.log(Level.ERROR, "Exception while committing transaction", e);
+            logger.log(Level.ERROR, "Exception while executing service", e);
             throw new ServiceException(e);
         } finally {
             transaction.endNoTransaction();
         }
         return roleId;
     }
-
     @Override
     public Optional<User> findByLogin(String login) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
@@ -233,14 +194,13 @@ public class UserServiceImpl implements UserService {
         try {
             userOptional = userDao.findUserByLogin(login);
         } catch (DaoException e) {
-            logger.log(Level.ERROR, "Exception while committing transaction", e);
+            logger.log(Level.ERROR, "Exception while executing service", e);
             throw new ServiceException(e);
         } finally {
             transaction.endNoTransaction();
         }
         return userOptional;
     }
-
     @Override
     public Optional<User> findById(Long userId) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
@@ -250,39 +210,37 @@ public class UserServiceImpl implements UserService {
         try {
             userOptional = userDao.findById(userId);
         } catch (DaoException e) {
-            logger.log(Level.ERROR, "Exception while committing transaction", e);
+            logger.log(Level.ERROR, "Exception while executing service", e);
             throw new ServiceException(e);
         } finally {
             transaction.endNoTransaction();
         }
         return userOptional;
     }
-
     @Override
-    public boolean blockUser(long userId) throws ServiceException {
+    public boolean changeUserStatus(long userId, boolean status) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
         EntityTransaction transaction = new EntityTransaction();
         boolean blocked;
         transaction.beginNoTransaction(userDao);
         try {
-            blocked = userDao.changeActiveStatus(userId, false);
+            blocked = userDao.changeActiveStatus(userId, status);
         } catch (DaoException e) {
-            logger.log(Level.ERROR, "Exception while committing transaction", e);
+            logger.log(Level.ERROR, "Exception while executing service", e);
             throw new ServiceException(e);
         } finally {
-            transaction.end();
+            transaction.endNoTransaction();
         }
         return blocked;
     }
-
-    @Override
-    public boolean setUserAvatar(Long userId, String imagePath) throws ServiceException {
+      @Override
+    public boolean setUserAvatar(Long userId, InputStream image) throws ServiceException {
         boolean updated;
         UserDaoImpl userDao = new UserDaoImpl();
         EntityTransaction transaction = new EntityTransaction();
         transaction.beginNoTransaction(userDao);
         try {
-            updated = userDao.setUserAvatar(userId, imagePath);
+            updated = userDao.setUserAvatar(userId, image);
         } catch (DaoException e) {
             logger.log(Level.ERROR, "Exception while saving changes", e);
             throw new ServiceException(e);

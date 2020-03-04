@@ -3,7 +3,6 @@ package com.vitkovskaya.finalProject.service;
 import com.vitkovskaya.finalProject.entity.Cleaner;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface CleanerService {
@@ -24,10 +23,24 @@ public interface CleanerService {
      */
     Optional<Cleaner> findCleanerById(Long cleanerId) throws ServiceException;
 
-    boolean registerCleaner(Long id, Map<String, String> parameters) throws ServiceException;
-
+    /**
+     * Updates {@code Cleaner} object -
+     * updates database values - first name, last name, address, telephone number
+     * for cleaner that should be edited.
+     * After the update, updated values are set to this {@code Cleaner} object
+     *
+     * @param cleaner a {@code Cleaner} that should be edited containing new values
+     * @throws ServiceException if {@code DaoException} occurs (database access error)
+     * @return a {@code true} if (@code Cleaner) was updated, {@code false} otherwise
+     */
     boolean updateCleaner(Cleaner cleaner) throws ServiceException;
 
+    /**
+     * Gets all blocked cleaners from a database.
+     *
+     * @return a list contains {@code Cleaner}, not null
+     * @throws ServiceException if {@code DaoException} occurs (database access error)
+     */
     List<Cleaner> findBlockedCleaners() throws ServiceException;
 
 }

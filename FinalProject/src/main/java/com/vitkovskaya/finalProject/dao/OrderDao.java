@@ -3,32 +3,9 @@ package com.vitkovskaya.finalProject.dao;
 
 import com.vitkovskaya.finalProject.entity.Order;
 import com.vitkovskaya.finalProject.entity.OrderStatus;
-
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderDao {
-
-    List<Order> findAllFulfilledOrders() throws DaoException;
-
-    List<Order> findAllCancelledOrders() throws DaoException;
-
-    List<Order> findOrderByIncomingDate(LocalDate dateIncoming) throws DaoException;
-
-    List<Order> findOrderByExecuteDate(LocalDate dateExecuting) throws DaoException;
-
-    List<Order> findAllUnpaidOrders() throws DaoException;
-
-    List<Order> findAllPaidOrders() throws DaoException;
-
-    List<Order> findMinOrderSum() throws DaoException;
-
-    List<Order> findMaxOrderSum() throws DaoException;
-
-    List<Order> findOrderSumFromTo(int sumFrom, int sumTo) throws DaoException;
-
     /**
      * Updates a row in the table using order id
      * with paymentStatus true

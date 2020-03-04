@@ -9,11 +9,13 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +36,9 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
     private final static String SQL_CREATE_USER = "INSERT INTO users (login, password, fk_user_role, active_status, avatar_path) " +
             "VALUES (?, ?, ?, ?, ?)";
     private final static String SQL_UPDATE_USER_PASSWORD = "UPDATE users SET password= ? WHERE login= ?";
-    private final static String SQL_UPDATE_USER_ACTIVE_STATUS = "UPDATE users SET active_status= ? WHERE users_id= ?";// FIXME: 22.01.2020
+    private final static String SQL_UPDATE_USER_ACTIVE_STATUS = "UPDATE users SET active_status= ? WHERE users_id= ?";
     private final static String SQL_UPDATE_USER_AVATAR = "UPDATE users SET avatar_path= ? WHERE users_id= ?";
+
     @Override
     public List<User> findAll() throws DaoException {
         List<User> userList = new ArrayList<>();
@@ -59,7 +62,7 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
 
     @Override
     public Optional<User> findById(Long id) throws DaoException {
-        User user = new User();
+        User user = null;
         PreparedStatement statement = null;
         Optional<User> userOptional;
         try {
@@ -69,7 +72,7 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
             while (resultSet.next()) {
                 user = extractUser(resultSet);
             }
-            userOptional = Optional.of(user);
+            userOptional = Optional.ofNullable(user);
         } catch (SQLException e) {
             logger.log(Level.ERROR, "SQL exception (request or table failed): ", e);
             throw new DaoException(e);
@@ -91,19 +94,13 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
             statement.setInt(3, user.getUserRole().ordinal());
             statement.setBoolean(4, user.getIsActive());
             statement.setString(5, user.getAvatarPath());
-            int updatedRows = statement.executeUpdate();
-            if (updatedRows == 0) {
-                throw new SQLException("Inserting user failed!"); // FIXME: 20.02.2020
-            }
+            statement.executeUpdate();
             generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 user.setUserId(generatedKeys.getInt(1));
                 created = true;
-            } else {
-                throw new SQLException("Inserting user failed, no ID obtained");
             }
         } catch (SQLException e) {
-
             logger.log(Level.ERROR, "User creation failed! ", e);
             throw new DaoException(e);
         } finally {
@@ -120,7 +117,7 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
             statement = connection.prepareStatement(SQL_UPDATE_USER_PASSWORD);
             statement.setString(1, user.getPassword());
             statement.setString(2, user.getLogin());
-           updated = statement.executeUpdate() !=0;
+            updated = statement.executeUpdate() != 0;
         } catch (SQLException e) {
             logger.log(Level.ERROR, "User password updating failed!: ", e);
             throw new DaoException(e);
@@ -129,44 +126,6 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
         }
         return updated;
     }
-
-
-//    /**
-//     * Updates a row in the table using user id
-//     * with new values of password
-//     *
-//     * @param user a user
-//     * @throws DaoException if {@code DaoException} occurs (database access error) or
-//     *                      if now rows where updated
-//     */
-//    @Override
-//    public User update(User user) throws DaoException {
-//        User oldUser = findUserByLogin(user.getLogin()).orElseThrow(() -> new DaoException("User not found"));
-//        PreparedStatement statement = null;
-//        try {
-//            statement = connection.prepareStatement(SQL_UPDATE_USER_PASSWORD);
-//            statement.setString(1, user.getPassword());
-//            statement.setString(2, user.getLogin());
-//            statement.executeUpdate();
-//        } catch (SQLException e) {
-//            logger.log(Level.ERROR, "User password updating failed!: ", e);
-//            throw new DaoException(e);
-//        } finally {
-//            close(statement);
-//        }
-//        return oldUser;
-//    }
-
-    @Override
-    public boolean delete(Long id) {
-        return false;
-    }
-
-    @Override
-    public boolean delete(User entity) {
-        return false;
-    }
-
     @Override
     public boolean findUserByLoginAndPassword(String login, String password) throws DaoException {
         boolean verified = false;
@@ -187,7 +146,6 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
         }
         return verified;
     }
-
     @Override
     public Optional<User> findUserByLogin(String login) throws DaoException {
         User user = new User();
@@ -209,8 +167,6 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
         }
         return optionalUser;
     }
-
-
     @Override
     public boolean checkUserLogin(String login) throws DaoException {
         boolean exist;
@@ -228,7 +184,6 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
         }
         return exist;
     }
-
     @Override
     public long getUserId(String login) throws DaoException {
         User user = new User();
@@ -251,11 +206,9 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
 
     @Override
     public boolean changeActiveStatus(long id, boolean active) throws DaoException {
-        // User oldUser = findById(user.getUserId());
         boolean updated = false;
         PreparedStatement statement = null;
         try {
-
             statement = connection.prepareStatement(SQL_UPDATE_USER_ACTIVE_STATUS);
             statement.setBoolean(1, active);
             statement.setLong(2, id);
@@ -264,13 +217,12 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
                 updated = true;
             }
         } catch (SQLException e) {
-            logger.log(Level.ERROR, "User password creation failed!: ", e);
+            logger.log(Level.ERROR, "SQL exception user status update failed!: ", e);
             throw new DaoException(e);
         } finally {
             close(statement);
         }
         return updated;
-
     }
 
     @Override
@@ -301,7 +253,23 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
             statement = connection.prepareStatement(SQL_UPDATE_USER_AVATAR);
             statement.setString(1, imagePath);
             statement.setLong(2, userId);
-            updated = statement.executeUpdate() !=0;
+            updated = statement.executeUpdate() != 0;
+        } catch (SQLException e) {
+            logger.log(Level.ERROR, "User avatar updating failed!: ", e);
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+        }
+        return updated;
+    }
+    public boolean setUserAvatar(Long userId, InputStream image) throws DaoException {
+        boolean updated;
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(SQL_UPDATE_USER_AVATAR);
+            statement.setBlob(1, image);
+            statement.setLong(2, userId);
+            updated = statement.executeUpdate() != 0;
         } catch (SQLException e) {
             logger.log(Level.ERROR, "User avatar updating failed!: ", e);
             throw new DaoException(e);
@@ -311,13 +279,20 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
         return updated;
     }
 
+    /**
+     * Creates a new {@code User} object and
+     * sets its values using {@code ResultSet}
+     *
+     * @param resultSet a {@code ResultSet} to build an object
+     * @return a {@code User}
+     */
     private User extractUser(ResultSet resultSet) throws SQLException {
         User user = new User();
         user.setUserId(resultSet.getLong(TableColumn.USER_ID));
         user.setLogin(resultSet.getString(TableColumn.USER_LOGIN));
         user.setPassword(resultSet.getString(TableColumn.USER_PASSWORD));
         int roleCode = resultSet.getInt(TableColumn.USER_ROLE);
-        switch (roleCode) { // FIXME: 27.01.2020
+        switch (roleCode) {
             case 1:
                 user.setUserRole(UserRole.ADMIN);
                 break;
@@ -332,8 +307,14 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
                 throw new IllegalArgumentException();
         }
         user.setIsActive(resultSet.getBoolean(TableColumn.USER_STATUS));
-        user.setAvatarPath(resultSet.getString(TableColumn.USER_AVATAR));
+        if (resultSet.getBytes(TableColumn.USER_AVATAR) != null) {
+            byte[] imageData = resultSet.getBytes(TableColumn.USER_AVATAR);
+            String encode = Base64.getEncoder().encodeToString(imageData);
+            user.setAvatarPath(encode);
+        }
         return user;
     }
 }
+
+
 

@@ -8,14 +8,10 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <title><fmt:message key="clientList.title"/></title>
 </head>
 <body>
@@ -82,14 +78,14 @@
     </c:otherwise>
 </c:choose>
 
-<a href="controller?command=show_orders&start=${pageStart - perPage}"><fmt:message key="title.previous"/></a>
+<a href="${pageContext.request.contextPath}controller?command=show_orders&start=${pageStart - perPage}"><fmt:message key="title.previous"/></a>
 ${pageStart + 1} - ${pageStart + perPage}
-<a href="controller?command=show_orders&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
+<a href="${pageContext.request.contextPath}controller?command=show_orders&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
 <br>
 <br>
 <div>
     <a href="${pageContext.request.contextPath}/controller?command=go_to_cabinet" class="btn btn-dark"> <fmt:message
-            key="back.toCabinet"/> command </a>
+            key="back.toCabinet"/></a>
 </div>
 <%@ include file="/jsp/static/footer.jsp" %>
 </body>

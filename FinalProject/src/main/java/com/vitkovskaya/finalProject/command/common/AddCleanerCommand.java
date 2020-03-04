@@ -1,32 +1,22 @@
 package com.vitkovskaya.finalProject.command.common;
 
 import com.vitkovskaya.finalProject.command.*;
-import com.vitkovskaya.finalProject.email.MailSenderCommand;
-import com.vitkovskaya.finalProject.entity.Cleaner;
+import com.vitkovskaya.finalProject.email.SendEmail;
 import com.vitkovskaya.finalProject.entity.User;
-import com.vitkovskaya.finalProject.entity.UserRole;
 import com.vitkovskaya.finalProject.service.ServiceException;
-import com.vitkovskaya.finalProject.service.serviceImpl.CleanerServiceImpl;
-import com.vitkovskaya.finalProject.service.serviceImpl.ClientServiceImpl;
 import com.vitkovskaya.finalProject.service.serviceImpl.UserServiceImpl;
 import com.vitkovskaya.finalProject.util.ConfigurationManager;
 import com.vitkovskaya.finalProject.util.MessageManager;
-import com.vitkovskaya.finalProject.util.PasswordHashGenerator;
 import com.vitkovskaya.finalProject.validator.DataValidator;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * The {@code AddCleanerCommand} class
- * is a command to add a new cleaner.
- */
+
 public class AddCleanerCommand implements Command {
-    private final static Logger logger = LogManager.getLogger(); // FIXME: 18.02.2020
+    private final static Logger logger = LogManager.getLogger();
 
     /**
      * Gets login, password, password conformation, firstName, lastName, address and telephone number
@@ -46,13 +36,12 @@ public class AddCleanerCommand implements Command {
      *                of the servlet
      * @return a {@code Router} object
      * @see DataValidator#validateUserInputDate(Map)
-
      * @see UserServiceImpl#checkUserLogin(String)
-     * @see UserServiceImpl#registerUser(String, String, UserRole)
-     * @see CleanerServiceImpl#registerCleaner(Long, Map)
+     * @see UserServiceImpl#registerCleaner(Map)
      */
     @Override
     public Router execute(RequestContent content) {
+        SendEmail email = new SendEmail();
         Router router = new Router();
         DataValidator validator = new DataValidator();
         Map<String, String> userParameters = new HashMap<>();
@@ -77,18 +66,20 @@ public class AddCleanerCommand implements Command {
             if (!userParameters.containsValue(ConstantName.ATTRIBUTE_EMPTY_VALUE) && !userParameters.containsValue(null)
                     && !userServiceImpl.checkUserLogin(login)) {
                 optionalUser = userServiceImpl.registerCleaner(userParameters);
-                if (optionalUser.isPresent()) { // FIXME: 18.02.2020
+                if (optionalUser.isPresent()) {
                     User user = optionalUser.get();
                     content.addSessionAttribute(ConstantName.ATTRIBUTE_USER, user);
-//                                new MailSenderCommand("yasoziopat@gmail.com", "spilevskaya",
-//                                        "nanna.vit@gmail.com", "Test", "MailTest").start();
+                    // should be email sendTo -   user.getLogin() instead of ConstantName.REAL_EMAIL_FOR_TEST
+                    user.getLogin();
+                             email.send(ConstantName.REAL_EMAIL_FOR_TEST,
+                                     MessageManager.getProperty(ConstantName.SUBJECT_SUCCESSFUL_REGISTRATION),
+                                     MessageManager.getProperty(ConstantName.EMAIL_SUCCESSFUL_REGISTRATION));
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_CLEANER_CABINET));
                     router.setType(RouteType.REDIRECT);
                 } else {
                     content.addRequestAttribute(ConstantName.ATTRIBUTE_REGISTRATION_ERROR,
                             MessageManager.getProperty(ConstantName.MESSAGE_REGISTRATION_ERROR));
                     router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ADD_CLEANER));
-                    router.setType(RouteType.FORWARD);
                 }
             } else {
                 if (userServiceImpl.checkUserLogin(login)) {
@@ -102,12 +93,10 @@ public class AddCleanerCommand implements Command {
                 content.addRequestAttribute(ConstantName.ATTRIBUTE_REGISTRATION_ERROR,
                         MessageManager.getProperty(ConstantName.MESSAGE_INCORRECT_INPUT_DATA));
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ADD_CLEANER));
-                router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
-            logger.error("Error while executing command", e);
+            logger.error("Error while adding cleaner to database", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
-            router.setType(RouteType.FORWARD);
         }
         return router;
     }

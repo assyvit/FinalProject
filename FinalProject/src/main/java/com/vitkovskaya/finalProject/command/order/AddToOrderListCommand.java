@@ -22,7 +22,7 @@ public class AddToOrderListCommand implements Command {
 
     /**
      * Gets the cleaning id and quantity from the request.
-     * Add cleaning to the cart, calculate total sum.
+     * Add cleaning to the order list, calculate total sum.
      * Returns router to the same page.
      *
      * @param content an {@link RequestContent} object that
@@ -38,27 +38,33 @@ public class AddToOrderListCommand implements Command {
         Router router = new Router();
         CleaningServiceImpl cleaningService = new CleaningServiceImpl();
         CleaningListAction action = new CleaningListAction();
-        List<CleaningItem> cleaningList = (List<CleaningItem>) content.getSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST);
+        String pagePath = (String) content.getSessionAttribute(ConstantName.ATTRIBUTE_PAGE_PATH);
+        String start = content.getRequestParameter(ConstantName.PARAMETER_PAGE_START);
+        List<CleaningItem> cleaningList =
+                (List<CleaningItem>) content.getSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST);
         Long itemId = Long.valueOf(content.getRequestParameter(ConstantName.ATTRIBUTE_CLEANING_ID));
-        Integer quantity = Integer.valueOf(content.getRequestParameter(ConstantName.ATTRIBUTE_ITEM_QUANTITY_IN_CART));
+        Integer quantity = Integer.valueOf(content.getRequestParameter(ConstantName.ATTRIBUTE_ITEM_QUANTITY_IN_ORDER));
         try {
             Optional<Cleaning> cleaningOptional = cleaningService.findCleaningById(itemId);
             if (cleaningOptional.isPresent()) {
                 Cleaning cleaning = cleaningOptional.get();
                 action.addItem(cleaningList, cleaning, quantity);
                 BigDecimal totalSum = (action.calculateTotalSum(cleaningList));
-                content.addSessionAttribute(ConstantName.ATTRIBUTE_CART_SUM, totalSum);
+                content.addSessionAttribute(ConstantName.ATTRIBUTE_TOTAL_ORDER_SUM, totalSum);
                 content.addSessionAttribute(ConstantName.ATTRIBUTE_ORDER_LIST, cleaningList);
-                router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_SHOW_CLEANING));
+                content.addSessionAttribute(ConstantName.ATTRIBUTE_START, start);
+                router.setPagePath(pagePath);
+      //          router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_SHOW_CLEANING));
                 router.setType(RouteType.FORWARD);
             } else {
-                content.addRequestAttribute(ConstantName.ATTRIBUTE_ADD_TO_CART_ERROR,
-                        MessageManager.getProperty(ConstantName.MESSAGE_EMPTY_CART));
+                content.addRequestAttribute(ConstantName.ATTRIBUTE_ADD_TO_ORDER_ERROR,
+                        MessageManager.getProperty(ConstantName.MESSAGE_EMPTY_ORDER));
+                content.addSessionAttribute(ConstantName.ATTRIBUTE_START, start);
                 router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_SHOW_CLEANING));
                 router.setType(RouteType.FORWARD);
             }
         } catch (ServiceException e) {
-            logger.error("Error while validating data", e);
+            logger.error("Error while adding cleaning to the order list", e);
             router.setPagePath(ConfigurationManager.getProperty(ConstantName.JSP_ERROR));
             router.setType(RouteType.REDIRECT);
         }

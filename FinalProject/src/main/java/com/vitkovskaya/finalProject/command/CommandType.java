@@ -18,14 +18,8 @@ public enum CommandType {
     REGISTRATION {{
         this.command = new RegistrationCommand();
     }},
-    CHANGE_PASSWORD {{
-        this.command = new ChangePasswordCommand();
-    }},
     LOGIN {{
         this.command = new LoginCommand();
-    }},
-    LOGOUT {{
-        this.command = new LogoutCommand();
     }},
     RECOVER_PASSWORD {{
         this.command = new RecoverPasswordCommand();
@@ -33,8 +27,29 @@ public enum CommandType {
     ADD_CLEANER {{
         this.command = new AddCleanerCommand();
     }},
+    GO_TO_MAIN {{
+        this.command = new MainCommand();
+    }},
+    SHOW_CATALOG {{
+        this.command = new ShowCatalogCommand();
+    }},
+
+
+    //for users
     UPLOAD_IMAGE {{
         this.command = new UploadImageCommand();
+    }},
+    LOGOUT {{
+        this.command = new LogoutCommand();
+    }},
+    CHANGE_PASSWORD {{
+        this.command = new ChangePasswordCommand();
+    }},
+    GO_TO_CABINET {{
+        this.command = new GoToCabinetCommand();
+    }},
+    GO_TO_CHANGE_PASSWORD {{
+        this.command = new GoToChangePasswordCommand();
     }},
 
     //Admin commands
@@ -50,8 +65,8 @@ public enum CommandType {
     SEND_EMAIL {{
         this.command = new SendEmailCommand();
     }},
-    BLOCK_USER {{
-        this.command = new BlockUserCommand();
+    CHANGE_USER_STATUS {{
+        this.command = new ChangeUserStatusCommand();
     }},
     SHOW_BLOCKED_CLEANERS {{
         this.command = new ShowBlockedCleanersCommand();
@@ -62,9 +77,6 @@ public enum CommandType {
 
 
     //Client commands
-    SHOW_CATALOG {{
-        this.command = new ShowCatalogCommand();
-    }},
     CONFIRM_ORDER {{
         this.command = new OrderCommand();
     }},
@@ -80,8 +92,8 @@ public enum CommandType {
     CLEAR_ORDER_LIST {{
         this.command = new ClearOrderListCommand();
     }},
-    GO_TO_CLIENT_CABINET {{
-        this.command = new GoToClientCabinetCommand();
+    GO_CLIENT_PROFILE {{
+        this.command = new GoClientProfileCommand();
     }},
     EDIT_CLIENT_PROFILE {{
         this.command = new EditClientProfileCommand();
@@ -92,13 +104,14 @@ public enum CommandType {
     CANCEL_ORDER {{
         this.command = new CancelOrderCommand();
     }},
-
+    GO_TO_ORDER {{
+        this.command = new GoToOrderCommand();
+    }},
 
     //Cleaner commands
     ADD_CLEANING {{
         this.command = new AddCleaningCommand();
     }},
-
     SHOW_CLEANER_ORDERS {{
         this.command = new ShowCleanerOrdersCommand();
     }},
@@ -125,11 +138,15 @@ public enum CommandType {
     }},
     CONFIRM_PAYMENT {{
         this.command = new ConfirmPaymentCommand();
+    }},
+    GO_TO_ADD_CLEANING {{
+        this.command = new GoToAddCleaning();
     }};
-    Command command;
 
+
+    Command command;
     public Command getCurrentCommand() {
-        return command; // FIXME: 25.01.2020
+        return command;
     }
 
 }

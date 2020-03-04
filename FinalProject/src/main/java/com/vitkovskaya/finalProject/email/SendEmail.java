@@ -4,10 +4,10 @@ import com.vitkovskaya.finalProject.service.ServiceException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -18,7 +18,7 @@ public class SendEmail {
     private static final String USER = "mail.user";
     private static final String PASSWORD = "mail.password";
 
-    public boolean  send(String sendTo, String subject, String messageToSend) throws ServiceException {
+    public void send(String sendTo, String subject, String messageToSend) throws ServiceException {
         Properties properties = loadProperties(PATH_CONFIG);
         final String user = properties.getProperty(USER);
         final String password = properties.getProperty(PASSWORD);
@@ -35,15 +35,14 @@ public class SendEmail {
             message.setSubject(subject);
             message.setText(messageToSend);
             Transport.send(message);
-          } catch (MessagingException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
             logger.error("Error sending email!", e);
-           throw new ServiceException(e);
-// FIXME: 10.02.2020
+            throw new ServiceException(e);
         }
-        return true; // FIXME: 10.02.2020
     }
-    private Properties loadProperties(String fileName){ // FIXME: 10.02.2020
+
+    private Properties loadProperties(String fileName) {
         Properties properties = new Properties();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
             properties.load(inputStream);

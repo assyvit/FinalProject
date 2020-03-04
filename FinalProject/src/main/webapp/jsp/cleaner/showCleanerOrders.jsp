@@ -8,14 +8,10 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <title><fmt:message key="ordersList.title"/></title>
 </head>
 <body>
@@ -48,6 +44,7 @@ ${showOrdersError}
                 <td><b><fmt:message key="order.paymentType"/></b></td>
                 <td><b><fmt:message key="order.paymentFulfilled"/></b></td>
                 <td><b><fmt:message key="order.comment"/></b></td>
+                <td><b><fmt:message key="title.clientsInfo"/></b></td>
             </tr>
             </thead>
             <tbody>
@@ -55,18 +52,18 @@ ${showOrdersError}
                        begin="${pageStart}" end="${pageStart + perPage - 1}">
                 <c:set var="classSuccess" value=""/>
                 <tr class="${classSuccess}">
-                    <td>${order.id}</td>
+                    <td>${fn:escapeXml(order.id)}</td>
                     <td>
                         <c:forEach var="item" items="${order.cleaningList}">
-                            ${item.cleaning.name}  ${item.quantity}
+                            ${fn:escapeXml(item.cleaning.name)}  ${fn:escapeXml(item.quantity)}
                         </c:forEach>
                     </td>
-                    <td>${order.orderSum}</td>
-                    <td>${ctg:formatLocalDateTime(order.incomingDate,"yyyy-MM-dd hh:mm:ss" )}</td>
-                    <td>${ctg:formatLocalDateTime(order.executeDate,"yyyy-MM-dd hh:mm" )}</td>
-                    <td>${order.orderStatus}</td>
-                    <td>${order.paymentType}</td>
-                    <td>${order.paymentFulfilled}
+                    <td>${fn:escapeXml(order.orderSum)}</td>
+                    <td>${fn:escapeXml(ctg:formatLocalDateTime(order.incomingDate,"yyyy-MM-dd hh:mm:ss" ))}</td>
+                    <td>${fn:escapeXml(ctg:formatLocalDateTime(order.executeDate,"yyyy-MM-dd hh:mm" ))}</td>
+                    <td>${fn:escapeXml(order.orderStatus)}</td>
+                    <td>${fn:escapeXml(order.paymentType)}</td>
+                    <td>${fn:escapeXml(order.paymentFulfilled)}
                         <c:if test="${order.orderStatus.toString() == 'PROCESSED'}">
                             <form method="POST" action="${pageContext.request.contextPath}/controller">
                                 <input type="hidden" name="command" value="confirm_payment"/>
@@ -77,7 +74,13 @@ ${showOrdersError}
                             </form>
                         </c:if>
                     </td>
-                    <td>${order.comment}</td>
+                    <td>${fn:escapeXml(order.comment)}</td>
+                    <td>
+                            ${fn:escapeXml(order.client.firstName)}
+                            ${fn:escapeXml(order.client.lastName)}
+                            ${fn:escapeXml(order.client.address)}
+                            ${fn:escapeXml(order.client.telephoneNumber)}
+                    </td>
                     <td><c:choose>
                         <c:when test="${order.orderStatus == 'NEW'}">
                             <form method="POST" action="${pageContext.request.contextPath}/controller">

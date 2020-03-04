@@ -19,6 +19,7 @@ public class Router {
     private RouteType type;
 
     public Router() {
+        this.type = RouteType.FORWARD;
     }
 
     public Router(String pagePath, RouteType type) {

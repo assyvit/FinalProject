@@ -1,25 +1,10 @@
 package com.vitkovskaya.finalProject.dao;
 
 import com.vitkovskaya.finalProject.entity.Cleaning;
-import com.vitkovskaya.finalProject.entity.CleaningType;
 import com.vitkovskaya.finalProject.entity.CleaningItem;
-
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface CleaningDao {
-
-    List<Cleaning> findByName(String patternName) throws DaoException;
-
-    List<Cleaning> findByMinPrice() throws DaoException;
-
-    List<Cleaning> findByMaxPrice() throws DaoException;
-
-    List<Cleaning> findByPriceFromTo(int priceFrom, int priceTo) throws DaoException;
-
-    List<Cleaning> findByServiceType(CleaningType cleaningType) throws DaoException;
-    Optional<BigDecimal> findPriceById(long cleaningId) throws DaoException; // FIXME: 25.02.2020
     /**
      * Gets a row from the table using cleaner id,
      * builds cleaning, adds it to List and returns List<Cleaning> object that represents this id
