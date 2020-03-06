@@ -78,9 +78,9 @@
     </c:otherwise>
 </c:choose>
 
-<a href="${pageContext.request.contextPath}controller?command=show_orders&start=${pageStart - perPage}"><fmt:message key="title.previous"/></a>
+<a href="${pageContext.request.contextPath}/controller?command=show_orders&start=${pageStart - perPage}"><fmt:message key="title.previous"/></a>
 ${pageStart + 1} - ${pageStart + perPage}
-<a href="${pageContext.request.contextPath}controller?command=show_orders&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
+<a href="${pageContext.request.contextPath}/controller?command=show_orders&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
 <br>
 <br>
 <div>
