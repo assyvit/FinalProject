@@ -112,9 +112,9 @@
 <%--<a href="controller?command=show_cleaners&start=${pageStart + perPage}"--%>
 <%--   class="btn btn-dark"><fmt:message key="title.next"/></a>--%>
 
-<a href="controller?command=show_cleaners&start=${pageStart - perPage}"><fmt:message key="title.previous"/></a>
+<a href="${pageContext.request.contextPath}/controller?command=show_cleaners&start=${pageStart - perPage}"><fmt:message key="title.previous"/></a>
 ${pageStart + 1} - ${pageStart + perPage}
-<a href="controller?command=show_cleaners&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
+<a href="${pageContext.request.contextPath}/controller?command=show_cleaners&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
 
 <strong><p class="text-danger"> ${blockUserError} </p></strong>
 <strong><p class="text-success"> ${blockUser} </p></strong>
