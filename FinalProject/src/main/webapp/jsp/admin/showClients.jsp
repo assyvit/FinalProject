@@ -113,11 +113,11 @@
 
 <%--<a href="controller?command=show_clients&start=${pageStart + perPage}"--%>
 <%--   class="btn btn-dark"> <td><fmt:message key="title.next"/></td></a>--%>
-<a href="${pageContext.request.contextPath}controller?command=show_clients&start=${pageStart - perPage}">
+<a href="${pageContext.request.contextPath}/controller?command=show_clients&start=${pageStart - perPage}">
     <td>
     <fmt:message key="title.previous"/></a>
 ${pageStart + 1} - ${pageStart + perPage}
-<a href="${pageContext.request.contextPath}controller?command=show_clients&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
+<a href="${pageContext.request.contextPath}/controller?command=show_clients&start=${pageStart + perPage}"><fmt:message key="title.next"/></a>
 <br>
 <div>
     <a href="${pageContext.request.contextPath}/controller?command=go_to_cabinet" class="btn btn-dark"> <fmt:message
